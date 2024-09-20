@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+<<<<<<< HEAD
+.idea/php.xml
+.idea/vcs.xml
+=======
+.idea/vcs.xml
+.idea/php.xml
+>>>>>>> 8d1b4516946a229b2691bc32331058f7e6508e4d
+.idea/workspace.xml
