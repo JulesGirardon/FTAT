@@ -47,4 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ':spe' => $spe,
     ':mail' => $mail,
     ':statut' => $statut]);
+    header("Location: ../index.php");
+    exit();
 }

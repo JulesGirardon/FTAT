@@ -1,88 +1,57 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Hôte : 127.0.0.1
--- Généré le : ven. 20 sep. 2024 à 08:13
--- Version du serveur : 10.4.32-MariaDB
--- Version de PHP : 8.2.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
 -- Base de données : `agiletools`
---
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `equipesprj`
---
-
+-- Table `equipesprj` (équipes de projet)
 CREATE TABLE `equipesprj` (
-  `IdEq` smallint(11) NOT NULL AUTO_INCREMENT,
-  `NomEqPrj` VARCHAR(11) NOT NULL,
+  `IdEq` smallint(6) NOT NULL AUTO_INCREMENT,     -- Clé primaire auto-incrémentée
+  `NomEqPrj` VARCHAR(50) NOT NULL,                -- Augmentation de la taille du nom de l'équipe
+  PRIMARY KEY (`IdEq`)                            -- Définition de la clé primaire ici
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `etatstaches`
---
-
+-- Table `etatstaches` (états des tâches)
 CREATE TABLE `etatstaches` (
-  `IdEtat` smallint(4) NOT NULL,
-  `Etat` varchar(50) NOT NULL
+  `IdEtat` smallint(4) NOT NULL AUTO_INCREMENT,   -- Ajout de l'AUTO_INCREMENT pour simplifier
+  `Etat` varchar(50) NOT NULL,
+  PRIMARY KEY (`IdEtat`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Déchargement des données de la table `etatstaches`
---
-
+-- Données initiales de `etatstaches`
 INSERT INTO `etatstaches` (`IdEtat`, `Etat`) VALUES
 (1, 'A faire'),
 (2, 'En cours'),
 (3, 'Terminé et TestUnitaire réalisé'),
-(4, 'Test Fonctionnel Réalisé / Module intégré dans ver'),
-(5, 'intégré dans version de production');
+(4, 'Test Fonctionnel Réalisé / Module intégré dans version'),
+(5, 'Intégré dans version de production');
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `idees_bac_a_sable`
---
-
+-- Table `idees_bac_a_sable` (idées dans le bac à sable)
 CREATE TABLE `idees_bac_a_sable` (
-  `Id_Idee_bas` int(11) NOT NULL,
+  `Id_Idee_bas` int(11) NOT NULL AUTO_INCREMENT,  -- AUTO_INCREMENT ajouté pour les idées
   `desc_Idee_bas` varchar(300) NOT NULL,
   `IdU` smallint(6) NOT NULL,
-  `IdEq` smallint(6) NOT NULL
+  `IdEq` smallint(6) NOT NULL,
+  PRIMARY KEY (`Id_Idee_bas`),                    -- Clé primaire définie ici
+  KEY `IdU` (`IdU`),
+  KEY `IdEq` (`IdEq`),
+  CONSTRAINT `FK_IdeeBAS_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
+  CONSTRAINT `FK_IdeesBAS_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `prioritestaches`
---
-
+-- Table `prioritestaches` (priorités des tâches)
 CREATE TABLE `prioritestaches` (
-  `idPriorite` tinyint(1) NOT NULL,
+  `idPriorite` tinyint(1) NOT NULL AUTO_INCREMENT,  -- AUTO_INCREMENT pour simplifier la gestion des priorités
   `Priorite` varchar(15) NOT NULL,
-  `valPriorite` tinyint(1) NOT NULL
+  `valPriorite` tinyint(1) NOT NULL,
+  PRIMARY KEY (`idPriorite`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Déchargement des données de la table `prioritestaches`
---
-
+-- Données initiales de `prioritestaches`
 INSERT INTO `prioritestaches` (`idPriorite`, `Priorite`, `valPriorite`) VALUES
 (1, '1', 1),
 (2, '2', 2),
@@ -91,210 +60,96 @@ INSERT INTO `prioritestaches` (`idPriorite`, `Priorite`, `valPriorite`) VALUES
 (5, '5', 5),
 (6, 'MUST (MoSCoW)', 5),
 (7, 'SHOULD (MoSCoW)', 4),
-(8, 'Could ', 2),
+(8, 'Could', 2),
 (9, 'WONT (MoSCoW)', 0);
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `roles`
---
-
+-- Table `roles` (rôles des utilisateurs)
 CREATE TABLE `roles` (
-  `IdR` smallint(6) NOT NULL,
-  `DescR` varchar(100) NOT NULL
+  `IdR` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT ajouté pour les rôles
+  `DescR` varchar(100) NOT NULL,
+  PRIMARY KEY (`IdR`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `rolesutilisateurprojet`
---
-
+-- Table `rolesutilisateurprojet` (liaison utilisateurs-projets-rôles)
 CREATE TABLE `rolesutilisateurprojet` (
   `IdU` smallint(6) NOT NULL,
   `IdR` smallint(6) NOT NULL,
-  `IdEq` smallint(6) NOT NULL
+  `IdEq` smallint(6) NOT NULL,
+  PRIMARY KEY (`IdU`, `IdR`, `IdEq`),              -- Utilisation d'une clé primaire composée
+  KEY `FK_RoleUtil_Utilisateurs` (`IdU`),
+  CONSTRAINT `FK_RoleUtil_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
+  CONSTRAINT `FK_RoleUtil_Roles` FOREIGN KEY (`IdR`) REFERENCES `roles` (`IdR`),
+  CONSTRAINT `FK_RoleUtil_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `sprintbacklog`
---
-
+-- Table `sprintbacklog` (backlog des sprints)
 CREATE TABLE `sprintbacklog` (
   `IdT` int(11) NOT NULL,
   `IdS` smallint(6) NOT NULL,
   `IdU` smallint(6) NOT NULL,
-  `IdEtat` smallint(6) NOT NULL
+  `IdEtat` smallint(6) NOT NULL,
+  PRIMARY KEY (`IdT`),
+  KEY `IdS` (`IdS`),
+  KEY `IdU` (`IdU`),
+  KEY `IdEtat` (`IdEtat`),
+  CONSTRAINT `FK_SB_EtatTaches` FOREIGN KEY (`IdEtat`) REFERENCES `etatstaches` (`IdEtat`),
+  CONSTRAINT `FK_SB_Sprints` FOREIGN KEY (`IdS`) REFERENCES `sprints` (`IdS`),
+  CONSTRAINT `FK_SB_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
+  CONSTRAINT `FK_SB_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `sprints`
---
-
+-- Table `sprints` (sprints)
 CREATE TABLE `sprints` (
-  `IdS` smallint(6) NOT NULL,
-  `DateDEbS` date NOT NULL,
+  `IdS` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT pour les sprints
+  `DateDebS` date NOT NULL,
   `DateFinS` date NOT NULL,
   `RetrospectiveS` varchar(300) DEFAULT NULL,
   `RevueDeSprint` varchar(300) DEFAULT NULL,
-  `IdEq` smallint(6) NOT NULL
-  `VelociteEqPrj` decimal(10,0) NOT NULL
+  `IdEq` smallint(6) NOT NULL,
+  `VelociteEqPrj` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`IdS`),
+  KEY `IdEq` (`IdEq`),
+  CONSTRAINT `FK_Sprints_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `taches`
---
-
+-- Table `taches` (tâches)
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) NOT NULL AUTO_INCREMENT,           -- AUTO_INCREMENT pour les tâches
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
-  `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL
+  `CoutT` enum('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+  `IdPriorite` tinyint(1) NOT NULL,
+  PRIMARY KEY (`IdT`),
+  KEY `IdPriorite` (`IdPriorite`),
+  KEY `IndexIdEq` (`IdEq`),
+  CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
+  CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `utilisateurs`
---
-
+-- Table `utilisateurs` (utilisateurs)
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
+  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT pour les utilisateurs
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
   `mail` varchar(50) NOT NULL,
   `MotDePAsseU` varchar(255) NOT NULL,
-  `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `Statut` enum('Admin','User') NOT NULL DEFAULT 'User';
+  `SpecialiteU` enum('Développeur', 'Modeleur', 'Animateur', 'UI', 'IA', 'WebComm', 'Polyvalent') NOT NULL DEFAULT 'Polyvalent',
+  `Statut` enum('Admin', 'User') NOT NULL DEFAULT 'User',
+  PRIMARY KEY (`IdU`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Index pour les tables déchargées
---
+-- --------------------------------------------------------
 
---
--- Index pour la table `equipesprj`
---
-ALTER TABLE `equipesprj`
-  ADD PRIMARY KEY (`IdEq`);
-
---
--- Index pour la table `etatstaches`
---
-ALTER TABLE `etatstaches`
-  ADD PRIMARY KEY (`IdEtat`);
-
---
--- Index pour la table `idees_bac_a_sable`
---
-ALTER TABLE `idees_bac_a_sable`
-  ADD PRIMARY KEY (`Id_Idee_bas`),
-  ADD KEY `IdU` (`IdU`),
-  ADD KEY `IdEq` (`IdEq`);
-
---
--- Index pour la table `prioritestaches`
---
-ALTER TABLE `prioritestaches`
-  ADD PRIMARY KEY (`idPriorite`);
-
---
--- Index pour la table `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`IdR`);
-
---
--- Index pour la table `rolesutilisateurprojet`
---
-ALTER TABLE `rolesutilisateurprojet`
-  ADD PRIMARY KEY (`IdR`,`IdEq`),
-  ADD KEY `IdR` (`IdR`),
-  ADD KEY `IdEq` (`IdEq`),
-  ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
-
---
--- Index pour la table `sprintbacklog`
---
-ALTER TABLE `sprintbacklog`
-  ADD PRIMARY KEY (`IdT`),
-  ADD KEY `IdS` (`IdS`),
-  ADD KEY `IdU` (`IdU`),
-  ADD KEY `IdEtat` (`IdEtat`);
-
---
--- Index pour la table `sprints`
---
-ALTER TABLE `sprints`
-  ADD PRIMARY KEY (`IdS`),
-  ADD KEY `IdEq` (`IdEq`);
-
---
--- Index pour la table `taches`
---
-ALTER TABLE `taches`
-  ADD PRIMARY KEY (`IdT`),
-  ADD KEY `IdPriorite` (`IdPriorite`),
-  ADD KEY `IndexIdEq` (`IdEq`);
-
---
--- Index pour la table `utilisateurs`
---
-ALTER TABLE `utilisateurs`
-  ADD PRIMARY KEY (`IdU`);
-  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
-
---
--- Contraintes pour les tables déchargées
---
-
---
--- Contraintes pour la table `idees_bac_a_sable`
---
-ALTER TABLE `idees_bac_a_sable`
-  ADD CONSTRAINT `FK_IdeeBAS_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  ADD CONSTRAINT `FK_IdeesBAS_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
-
---
--- Contraintes pour la table `rolesutilisateurprojet`
---
-ALTER TABLE `rolesutilisateurprojet`
-  ADD CONSTRAINT `FK_RoleUtil_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  ADD CONSTRAINT `FK_RoleUtil_Roles` FOREIGN KEY (`IdR`) REFERENCES `roles` (`IdR`),
-  ADD CONSTRAINT `FK_RoleUtil_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
-
---
--- Contraintes pour la table `sprintbacklog`
---
-ALTER TABLE `sprintbacklog`
-  ADD CONSTRAINT `FK_SB_EtatTaches` FOREIGN KEY (`IdEtat`) REFERENCES `etatstaches` (`IdEtat`),
-  ADD CONSTRAINT `FK_SB_Sprints` FOREIGN KEY (`IdS`) REFERENCES `sprints` (`IdS`),
-  ADD CONSTRAINT `FK_SB_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
-  ADD CONSTRAINT `FK_SB_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
-
---
--- Contraintes pour la table `sprints`
---
-ALTER TABLE `sprints`
-  ADD CONSTRAINT `FK_Sprints_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`);
-
---
--- Contraintes pour la table `taches`
---
-ALTER TABLE `taches`
-  ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

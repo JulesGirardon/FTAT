@@ -14,7 +14,7 @@
         }
         
     }
-?>
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,8 +31,7 @@
             echo "<p style='color: red;'>Vous devez être Administateur pour inscrire un utilisateur</p>";
         }
     }
-    ?>
-    <p><a href="pages/login.php"> Se connecter</p>
+    ?>    
     <?php
     if (isset($_SESSION['statut']) && $_SESSION['statut'] == "Admin"){
         echo '<p><a href="pages/signin.php"> Inscrire un utilisateur</p>';
@@ -41,6 +40,9 @@
     <?php
     if ($_SESSION['is_logged_in']){
         echo '<p><a href="pages/logout.php"> Se déconnecter</p>';
+    }
+    else{
+        echo '<p><a href="pages/login.php"> Se connecter</p>';
     }
     ?>
 </body>
