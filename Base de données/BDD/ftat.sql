@@ -28,9 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `equipesprj` (
-  `IdEq` smallint(11) NOT NULL,
-  `NomEqPrj` int(11) NOT NULL,
-  `VelociteEqPrj` decimal(10,0) NOT NULL
+  `IdEq` smallint(11) NOT NULL AUTO_INCREMENT,
+  `NomEqPrj` VARCHAR(11) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -144,6 +143,7 @@ CREATE TABLE `sprints` (
   `RetrospectiveS` varchar(300) DEFAULT NULL,
   `RevueDeSprint` varchar(300) DEFAULT NULL,
   `IdEq` smallint(6) NOT NULL
+  `VelociteEqPrj` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -168,11 +168,13 @@ CREATE TABLE `taches` (
 --
 
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
-  `MotDePAsseU` varchar(15) NOT NULL,
-  `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent'
+  `mail` varchar(50) NOT NULL,
+  `MotDePAsseU` varchar(255) NOT NULL,
+  `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
+  `Statut` enum('Admin','User') NOT NULL DEFAULT 'User';
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -249,6 +251,7 @@ ALTER TABLE `taches`
 --
 ALTER TABLE `utilisateurs`
   ADD PRIMARY KEY (`IdU`);
+  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
 
 --
 -- Contraintes pour les tables déchargées
