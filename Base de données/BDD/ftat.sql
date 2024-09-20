@@ -28,9 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `equipesprj` (
-  `IdEq` smallint(11) NOT NULL,
-  `NomEqPrj` int(11) NOT NULL,
-  `VelociteEqPrj` decimal(10,0) NOT NULL
+  `IdEq` smallint(11) NOT NULL AUTO_INCREMENT,
+  `NomEqPrj` VARCHAR(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -62,7 +61,7 @@ INSERT INTO `etatstaches` (`IdEtat`, `Etat`) VALUES
 --
 
 CREATE TABLE `idees_bac_a_sable` (
-  `Id_Idee_bas` int(11) NOT NULL,
+  `Id_Idee_bas` int(11) NOT NULL AUTO_INCREMENT,
   `desc_Idee_bas` varchar(300) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
@@ -138,12 +137,13 @@ CREATE TABLE `sprintbacklog` (
 --
 
 CREATE TABLE `sprints` (
-  `IdS` smallint(6) NOT NULL,
+  `IdS` smallint(6) NOT NULL AUTO_INCREMENT,
   `DateDEbS` date NOT NULL,
   `DateFinS` date NOT NULL,
   `RetrospectiveS` varchar(300) DEFAULT NULL,
   `RevueDeSprint` varchar(300) DEFAULT NULL,
-  `IdEq` smallint(6) NOT NULL
+  `IdEq` smallint(6) NOT NULL,
+    `VelociteEqPrj` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -153,7 +153,7 @@ CREATE TABLE `sprints` (
 --
 
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) NOT NULL AUTO_INCREMENT,
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE `taches` (
 --
 
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
   `MotDePAsseU` varchar(15) NOT NULL,
@@ -292,53 +292,75 @@ ALTER TABLE `taches`
   ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
 
 -- Ce trigger s'assure qu'une équipe ne peut pas avoir deux taches avec le meme titre dans un projet.
+DELIMITER $$
+
 CREATE TRIGGER verify_unique_task_per_team
 BEFORE INSERT ON taches
 FOR EACH ROW
 BEGIN
-  DECLARE task_count INT;
+    DECLARE task_count INT;
+    
+    SELECT COUNT(*) INTO task_count
+    FROM taches
+    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
 
-  -- Vérifier si une tache avec le meme titre existe déjà dans l'équipe
-  SELECT COUNT(*) INTO task_count
-  FROM taches
-  WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
+    IF task_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
+    END IF;
+END$$
 
-  IF task_count > 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
-  END IF;
-END;
+DELIMITER ;
 
--- Ce trigger s'assure que la vélocité d'une équipe ne peut pas etre négative.
-  CREATE TRIGGER check_team_velocity
-BEFORE INSERT OR UPDATE ON equipesprj
+-- Ces triggers s'assure que la vélocité d'une équipe ne peut pas etre négative.
+  DELIMITER $$
+
+CREATE TRIGGER check_team_velocity
+BEFORE INSERT ON sprints
 FOR EACH ROW
 BEGIN
   -- Vérifier que la vélocité de l'équipe est positive
   IF NEW.VelociteEqPrj < 0 THEN
     SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = "Erreur : La vélocité d'une équipe ne peut pas etre négative.";
+    SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
   END IF;
-END;
+END; $$
+
+CREATE TRIGGER check_team_velocity_update
+BEFORE UPDATE ON sprints
+FOR EACH ROW
+BEGIN
+  -- Vérifier que la vélocité de l'équipe est positive
+  IF NEW.VelociteEqPrj < 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
+  END IF;
+END; $$
+
+DELIMITER ;
 
 -- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
+DELIMITER $$
+
 CREATE TRIGGER prevent_invalid_task_assignment
 BEFORE INSERT ON sprintbacklog
 FOR EACH ROW
 BEGIN
   DECLARE team_id_of_user SMALLINT;
   
-  -- Récupere le team ID de l'utilisateur assigné à la tache
+  -- Récupère le team ID de l'utilisateur assigné à la tache
   SELECT IdEq INTO team_id_of_user
   FROM utilisateurs
   WHERE IdU = NEW.IdU;
 
-  -- Si la team de l'utilisateur ne correspond pas a la team assigné à la tache, empeche l'assignement
+  -- Si la team de l'utilisateur ne correspond pas à la team assignée à la tache, empêche l'assignation
   IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
     SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la meme équipe que la tache.";
+    SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la même équipe que la tâche.";
   END IF;
-END;
+END; $$
+
+DELIMITER ;
 
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
