@@ -290,8 +290,27 @@ ALTER TABLE `sprints`
 ALTER TABLE `taches`
   ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
   ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
-COMMIT;
 
+-- Ce trigger s'assure qu'une équipe ne peut pas avoir deux taches avec le meme titre dans un projet.
+CREATE TRIGGER verify_unique_task_per_team
+BEFORE INSERT ON taches
+FOR EACH ROW
+BEGIN
+  DECLARE task_count INT;
+
+  -- Vérifier si une tache avec le meme titre existe déjà dans l'équipe
+  SELECT COUNT(*) INTO task_count
+  FROM taches
+  WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
+
+  IF task_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
+  END IF;
+END;
+
+
+COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
