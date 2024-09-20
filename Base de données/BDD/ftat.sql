@@ -309,6 +309,36 @@ BEGIN
   END IF;
 END;
 
+-- Ce trigger s'assure que la vélocité d'une équipe ne peut pas etre négative.
+  CREATE TRIGGER check_team_velocity
+BEFORE INSERT OR UPDATE ON equipesprj
+FOR EACH ROW
+BEGIN
+  -- Vérifier que la vélocité de l'équipe est positive
+  IF NEW.VelociteEqPrj < 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = "Erreur : La vélocité d'une équipe ne peut pas etre négative.";
+  END IF;
+END;
+
+-- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
+CREATE TRIGGER prevent_invalid_task_assignment
+BEFORE INSERT ON sprintbacklog
+FOR EACH ROW
+BEGIN
+  DECLARE team_id_of_user SMALLINT;
+  
+  -- Récupere le team ID de l'utilisateur assigné à la tache
+  SELECT IdEq INTO team_id_of_user
+  FROM utilisateurs
+  WHERE IdU = NEW.IdU;
+
+  -- Si la team de l'utilisateur ne correspond pas a la team assigné à la tache, empeche l'assignement
+  IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la meme équipe que la tache.";
+  END IF;
+END;
 
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
