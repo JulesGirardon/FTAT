@@ -1,12 +1,12 @@
 <?php
 include_once "connexionBDD.php";
 
-function displayAllTasks()
+function displayAllTasks($currPrj)
 {
     global $bdd;
 
     try {
-        $stmt = $bdd->prepare("CALL getAllTasks()"); // Utilisez $bdd ici
+        $stmt = $bdd->prepare("CALL getAllTasks($currPrj)");
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $results;

@@ -1,9 +1,10 @@
 DROP PROCEDURE IF EXISTS getAllTasks;
 DELIMITER $$
 
-CREATE PROCEDURE getAllTasks()
+CREATE PROCEDURE getAllTasks(IN ID INT)
 BEGIN
-    SELECT * FROM taches;
+    SELECT * FROM taches
+    WHERE taches.IdEq = ID;
 END$$
 
 DELIMITER ;

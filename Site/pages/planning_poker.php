@@ -12,8 +12,9 @@
     </header>
     <main>
         <?php
+        $_SESSION["currPrj"]=1;
         include_once "../process/function_tasks.php";
-        $results = displayAllTasks();
+        $results = displayAllTasks($_SESSION["currPrj"]);
         if ($results && count($results) > 0) {
             echo "<table border='1'>";
             echo "<tr>
