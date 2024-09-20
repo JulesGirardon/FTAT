@@ -25,7 +25,6 @@
                     <tr>
                         <th>Titre</th>
                         <th>User Story</th>
-                        <th>ID Priorité</th>
                         <th>Cout</th>
                     </tr>
                 </thead>
@@ -34,7 +33,6 @@
                         <tr>
                             <td><?php echo htmlspecialchars($row['TitreT']); ?></td>
                             <td><?php echo htmlspecialchars($row['UserStoryT']); ?></td>
-                            <td><?php echo htmlspecialchars($row['IdPriorite']); ?></td>
                             <td><?php echo htmlspecialchars($row['CoutT']); ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -47,8 +45,8 @@
         ?>
         <a href="./planning_poker.php">Planning formulaire</a>
     </main>
-    <script>
-    </script>
+    <script src="../scripts/scripts.js"></script>
+
 </body>
 
 </html>
