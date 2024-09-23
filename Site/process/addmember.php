@@ -1,7 +1,7 @@
 <?php
 // RELIER A UNE PAGE QUE SEULE LES SCRUM MASTER PEUVENT VOIR
 
-include 'connexionBDD.php';
+include '../includes/connexionBDD.php';
 
 
 if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des infos
