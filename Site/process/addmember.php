@@ -3,6 +3,7 @@
 
 include '../includes/connexionBDD.php';
 
+echo $_POST['user'],$_POST['role'],$_POST['equipe'];
 
 if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des infos
 {
@@ -39,5 +40,6 @@ if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des in
             die('An error occurred while processing your request.');
         }
     }
+    header('Location: '."../pages/projet.php");
 }
 ?>

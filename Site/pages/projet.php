@@ -93,7 +93,64 @@ try {
             </li>
         <?php endforeach; ?>
     </ul>
+    
+    <h2>Les membres de l'equipe</h2>
+    <form action="../process/addmember.php" method="POST">
+
+        <?php 
+
+        if (true)      //$Team['IdR'] == 1 ) AND CAPACITE DE NOMBRE DE MEMBRE MAYBE
+        {
+
+//MODIFIER CE ECHO POUR TRIER LES OPTION POSSIBLE PAS AVOIR 2 SCRUM MASTER
+
+//ROLE
+            echo '<select id="role" name="role">
+                  <option>Membre</option>
+                  <option>ProductOwer</option>
+                  <option>ScrumMaster</option>
+                  </select>';
 
 
+
+//MEMBRE
+            echo '<select id="user" name="user">';
+            if (isset($bdd))
+            {
+                $sql = "SELECT IdU, NomU, PrenomU FROM utilisateurs";
+                $stmt = $bdd->prepare($sql);
+                $stmt->execute();
+
+                while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+                {
+                    echo "<option value='" . $row['IdU'] . "'>" . $row['PrenomU'] . " " . $row['NomU'] . "</option>";
+                }
+            }
+            echo'<option>None</option>';
+            echo '</select>';
+
+//EQUIPE EST DEJA CONNU
+            echo "<input type='hidden' name='equipe' value=" . $idEq . ">";
+            echo '<button type="submit">AddMember</button>';
+        }
+        ?>
+    </form>
+    
+    <!--//ADD LES AUTRES PERSONNES DE L'EQUIPE EN DESSOUS DE L'AJOUT DE MEMBRE -->
+    
+    <?php
+    if (isset($bdd))
+    {
+        $sql = "SELECT NomU, PrenomU FROM membre_equipe
+                JOIN utilisateurs ON utilisateurs.IdU = membre_equipe.IdU";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute();
+
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            echo "<a value='" . $row['IdU'] . "'>" . $row['PrenomU'] . " " . $row['NomU'] . "</a>";
+        }
+    }
+    ?>
 </body>
 </html>
