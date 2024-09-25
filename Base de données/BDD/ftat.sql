@@ -186,6 +186,22 @@ CREATE TABLE rolesutilisateurprojet (
   CONSTRAINT FK_RoleUtil_Roles FOREIGN KEY (IdR) REFERENCES roles(IdR)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+-- --------------------------------------------------------
+-- Table des CoutMembreTaches (relation : entre Membre et Tache)
+-- --------------------------------------------------------
+
+CREATE TABLE CoutMembreTaches (
+      IdU SMALLINT(6) NOT NULL,
+      IdT INT(11) NOT NULL,
+      Commentaire VARCHAR(255),
+      CoutMT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+      PRIMARY KEY (IdU, IdT),
+      CONSTRAINT FK_Id_Tache FOREIGN KEY (IdT) FOREIGN KEY (IdT) REFERENCES taches(IdT),
+      CONSTRAINT FK_Id_Utilisateur FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
 -- --------------------------------------------------------
 -- Table des membres d'équipe (relation N:N entre équipes et utilisateurs)
 -- --------------------------------------------------------
@@ -193,9 +209,9 @@ CREATE TABLE rolesutilisateurprojet (
 CREATE TABLE membre_equipe (
   IdEq SMALLINT(6) NOT NULL,
   IdU SMALLINT(6) NOT NULL,
-  PRIMARY KEY (IdEq, IdU),
-  CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
-  CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    PRIMARY KEY (IdEq, IdU),
+    CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
+    CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;
