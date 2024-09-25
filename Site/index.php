@@ -5,8 +5,8 @@ if (!isset($_SESSION['is_logged_in'])) {
     $_SESSION['is_logged_in'] = false;
 }
 else{
-    if ($_SESSION['is_logged_in']){
-        $sql = "SELECT statut FROM utilisateurs WHERE IdU = :userID";
+    if ($_SESSION['is_logged_in'] && isset($bdd)){
+        $sql = "SELECT statut FROM ftat.utilisateurs WHERE IdU = :userID";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([':userID' => $_SESSION['user_id']]);
         $_SESSION['statut'] = $stmt->fetchColumn();
@@ -36,6 +36,9 @@ if (isset($_SESSION['error'])){
 if (isset($_SESSION['statut']) && $_SESSION['statut'] == "Admin"){
     echo '<p><a href="pages/signin.php"> Inscrire un utilisateur</p>';
     echo '<p><a href="pages/create_project.php"> Créer un projet</p>';
+    echo '<p><a href="pages/create_sprint.php"> Créer un sprint</p>';
+    echo '<p><a href="pages/create_task.php"> Créer une tâche</p>';
+    echo '<p><a href="pages/create_sprintbacklog.php"> Créer un sprintbacklog</p>';
 
 }
 ?>

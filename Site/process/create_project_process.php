@@ -2,7 +2,7 @@
 session_start();
 
 include "../includes/connexionBDD.php";
-include "./function.php";
+include "../includes/function.php";
 
 if (isset($_POST['project_name'], $_POST['project_description'], $_POST['project_date_fin'], $_POST['scrum_master'])) {
     $project_name = $_POST['project_name'];
@@ -45,6 +45,5 @@ if (isset($_POST['project_name'], $_POST['project_description'], $_POST['project
             die('An error occurred while processing your request.' . $e->getMessage());
         }
         header('Location: '."../pages/create_project.php");
-
     }
 }

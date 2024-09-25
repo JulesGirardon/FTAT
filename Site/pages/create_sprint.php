@@ -2,7 +2,13 @@
 session_start();
 
 include "../includes/connexionBDD.php";
-include "../process/function.php";
+include "../includes/function.php";
+
+if (empty(getProjectWhereScrumMaster($_SESSION['user_id']))) {
+    echo "<p style='color: red;'>Aucun projet trouvé</p>";
+    exit;
+}
+
 ?>
 
 <!doctype html>
@@ -30,21 +36,16 @@ include "../process/function.php";
             <select id="select_project_to_add_sprint" name="select_project_to_add_sprint">
                 <?php
                     if (isset($bdd)) {
-                        $ProjectOfScrumMaster = "SELECT ep.IdEq, ep.NomEqPrj
-                                                 FROM ftat.equipesprj AS ep 
-                                                 JOIN ftat.rolesutilisateurprojet AS rup ON rup.IdEq = ep.IdEq
-                                                 WHERE rup.IdU = 0";
-                        $stmt = $bdd->prepare($ProjectOfScrumMaster);
-                        $stmt->execute();
+                        $ProjectOfScrumMaster = getProjectWhereScrumMaster($_SESSION['user_id']);
 
-                        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            print_r($row);
-                            echo '<option value="'.$row['IdEq'].'">'.$row['NomEqPrj'].'</option>';
+                        foreach ($ProjectOfScrumMaster as $project) {
+                            echo '<option value="'.$project['IdP'].'">'.$project['NomP'].'</option>';
                         }
                     }
                 ?>
             </select>
 
+            <button type="submit">Créer le sprint</button>
         </form>
 
 
