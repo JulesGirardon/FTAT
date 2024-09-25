@@ -25,17 +25,17 @@
 </head>
 <body> 
     <?php
-    if (isset($_SESSION['error'])){
-        if ($_SESSION['error'] == 'not_admin'){
-            unset($_SESSION['error']);
-            echo "<p style='color: red;'>Vous devez être Administateur pour inscrire un utilisateur</p>";
-        }
-    }
+    // if (isset($_SESSION['error'])){
+    //     if ($_SESSION['error'] == 'not_admin'){
+    //         unset($_SESSION['error']);
+    //         echo "<p style='color: red;'>Vous devez être Administateur pour inscrire un utilisateur</p>";
+    //     }
+    // }
     ?>    
     <?php
-    if (isset($_SESSION['statut']) && $_SESSION['statut'] == "Admin"){
+    //if (isset($_SESSION['statut']) && $_SESSION['statut'] == "Admin"){
         echo '<p><a href="pages/signin.php"> Inscrire un utilisateur</p>';
-    }
+    //}
     ?>
     <?php
     if ($_SESSION['is_logged_in']){

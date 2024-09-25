@@ -99,7 +99,7 @@ try {
 
 <?php 
 
-        if ($Projet["IdR"] == getIdRole("Scrum Master"))
+        if (true)//$Projet["IdR"] == getIdRole("Scrum Master"))
         {
 
 
@@ -146,7 +146,7 @@ try {
         $base->bindParam(":idEq", $idEq);
         $base->execute();
         
-        if ($Projet["IdR"] != getIdRole("Scrum Master"))
+        if (true)//$Projet["IdR"] != getIdRole("Scrum Master"))
         {
             while($row = $base->fetch(PDO::FETCH_ASSOC))
             {
