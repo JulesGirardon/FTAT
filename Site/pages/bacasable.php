@@ -1,5 +1,6 @@
 <?php
 include "../includes/connexionBDD.php";
+include "../includes/function.php";
 
 $userId = $_SESSION['user_id'];
 
@@ -20,17 +21,16 @@ if (isset($bdd)){
     }
     $projectIdsPlaceholder = implode(',', array_fill(0, count($projectIds), '?'));
 
-    $queryIdeas = "SELECT i.*, e.NomEqPrj, u.NomU, u.PrenomU
+    $Idees = "SELECT i.*, e.NomEqPrj, u.NomU, u.PrenomU
                FROM idees_bac_a_sable i
                JOIN equipesprj e ON i.IdEq = e.IdEq
                JOIN utilisateurs u ON i.IdU = u.IdU
                WHERE i.IdEq IN ($projectIdsPlaceholder)";
-    $stmtIdeas = $bdd->prepare($queryIdeas);
+    $stmtIdeas = $bdd->prepare($Idees);
     $stmtIdeas->execute($projectIds);
     $ideas = $stmtIdeas->fetchAll(PDO::FETCH_ASSOC);
 
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +44,7 @@ if (isset($bdd)){
 <h1>Bac à Sable - Vos Idées de Projet</h1>
 
 <?php if (!empty($ideas)): ?>
-    <table border="1">
+    <table>
         <thead>
         <tr>
             <th>Nom de l'équipe</th>
@@ -61,16 +61,15 @@ if (isset($bdd)){
                 <td><?= htmlspecialchars($idea['PrenomU'] . " " . $idea['NomU']) ?></td>
                 <td>
                     <?php
-                    // Check if the user is the Product Owner of this project
                     $isProductOwner = false;
                     foreach ($projects as $project) {
-                        if ($project['IdP'] == $idea['IdEq'] && $project['IdR'] == 1) { // Assuming 1 is the Product Owner role
+                        if ($project['IdP'] == $idea['IdEq'] && $project['IdR'] == getIdRole("Product Owner")) {
                             $isProductOwner = true;
                             break;
                         }
                     }
                     if ($isProductOwner): ?>
-                        <form method="post" action="delete_idea.php">
+                        <form method="post" action="../process/delete_idee.php">
                             <input type="hidden" name="idea_id" value="<?= $idea['Id_Idee_bas'] ?>">
                             <button type="submit" name="delete">Supprimer</button>
                         </form>
