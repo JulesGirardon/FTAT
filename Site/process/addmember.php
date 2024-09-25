@@ -2,6 +2,7 @@
 // RELIER A UN BOUTTON QUE SEULE LES SCRUM MASTER PEUVENT VOIR
 
 include '../includes/connexionBDD.php';
+session_start();
 
 if (!isset($_SESSION['user_id'])) 
 {
@@ -22,17 +23,24 @@ if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des in
             $IdR = getIdRole($_POST['role']);
             $IdEq = $_POST['equipe'];
 
+            $scrum = getIdRole("Scrum Master");
+            $product = getIdRole("Product Owner");
 
             //Verification si le nouveau membre prends le role scrum master
-            if ($IdR == getIdRole("Scrum Master")) // REVOIR SON INDDICE 
+            if ($IdR == $scrum || $IdR == $product )
             {
+                $member = getIdRole("Member");
                 $sql = 'UPDATE rolesutilisateurprojet
                         JOIN projets ON projets.IdP = rolesutilisateurprojet.IdP
-                        SET rolesutilisateurprojet.IdR = 0
-                        WHERE projets.IdEq = :IdEq';
+                        SET rolesutilisateurprojet.IdR = :member
+                        WHERE projets.IdEq = :IdEq AND rolesutilisateurprojet.IdR = :scrum 
+                        OR projets.IdEq = :IdEq AND rolesutilisateurprojet.IdR = :product ';
 
                 $changeRole = $pdo->prepare($sql);
                 $changeRole->bindParam(":IdEq", $IdEq);
+                $changeRole->bindParam(":member",$member)
+                $changeRole->bindParam(":scrum",$scrum)
+                $changeRole->bindParam(":product",$product)
                 $changeRole->execute();
             }
 
