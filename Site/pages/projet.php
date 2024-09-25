@@ -139,7 +139,7 @@ try {
 
     if (isset($bdd))
     {
-        $sql = "SELECT NomU, PrenomU, Statut FROM membre_equipe
+        $sql = "SELECT NomU, PrenomU, Statut, IdU FROM membre_equipe
                 JOIN utilisateurs ON utilisateurs.IdU = membre_equipe.IdU
                 WHERE membre_equipe.IdEq = :idEq";
         $base = $bdd->prepare($sql);
@@ -155,9 +155,19 @@ try {
         }
         else
         {
+            
+//MODIF MEMBRE EQUIPE
             while($row = $base->fetch(PDO::FETCH_ASSOC))
             {
+                echo '<form action="../process/modifmember.php" method="POST">';
                 echo "<p>" . $row['PrenomU'] . " " . $row['NomU'] . " " . $row['Statut'] . "</p>";
+                
+                echo "<input type='hidden' name='equipe' value=" . $idEq . ">";
+                echo "<input type='hidden' name='user' value=" . $idU . ">";
+                echo "<input type='hidden' name='role' value=" . $row['Statut'] . ">";
+
+                echo '<button type="submit">Modif Member</button>';
+                echo '</form>';
             }
         }
     }
