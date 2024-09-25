@@ -7,10 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $projectId = $_POST['projectId'];
     $commentContent = $_POST['commentContent'];
     $difficulty = $_POST['difficulty'];
-
-    if (!empty($userId) && !empty($projectId) && !empty($commentContent)) {
-        echo "C'est pas vide";
-
-        insertCout($userId, $projectId, $commentContent, null);
-    }
+    echo $userId, $projectId, $commentContent, $difficulty;
+    insertCout($userId, $projectId, $commentContent, null);
 }
