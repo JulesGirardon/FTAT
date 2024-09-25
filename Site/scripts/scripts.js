@@ -33,3 +33,7 @@ function setDifficulty(button) {
     difficulty = difficultyValue;
     document.getElementById('difficulty-display').textContent = difficulty;
 }
+function foo() {
+    alert("Submit button clicked!");
+    return true;
+ }

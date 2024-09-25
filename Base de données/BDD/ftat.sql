@@ -4,6 +4,7 @@ SET time_zone = "+00:00";
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS CoutMembreTaches;
 DROP TABLE IF EXISTS sprintbacklog;
 DROP TABLE IF EXISTS sprints;
 DROP TABLE IF EXISTS taches;
@@ -197,7 +198,7 @@ CREATE TABLE CoutMembreTaches (
       Commentaire VARCHAR(255),
       CoutMT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
       PRIMARY KEY (IdU, IdT),
-      CONSTRAINT FK_Id_Tache FOREIGN KEY (IdT) FOREIGN KEY (IdT) REFERENCES taches(IdT),
+      CONSTRAINT FK_Id_Tache FOREIGN KEY (IdT) REFERENCES taches(IdT),
       CONSTRAINT FK_Id_Utilisateur FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
