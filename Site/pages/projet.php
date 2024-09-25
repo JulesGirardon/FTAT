@@ -4,14 +4,14 @@ include "../includes/connexionBDD.php";
 session_start();
 
 // Vérifier si l'utilisateur est connecté
-// if (!isset($_SESSION['user_id'])) 
-// {
-//     header("Location: login.php");
-//     exit();
-// }
+if (!isset($_SESSION['user_id'])) 
+{
+    header("Location: login.php");
+    exit();
+}
 
-$userId = 1;//$_SESSION['user_id'];
-$idEq = 1;//$_POST['equipe'];
+$userId = $_SESSION['user_id'];
+$idEq = $_POST['equipe'];
 
 try {
 
@@ -99,7 +99,7 @@ try {
 
 <?php 
 
-        if (true)      //$Projet['IdR'] == 1 ) AND CAPACITE DE NOMBRE DE MEMBRE MAYBE
+        if ($Projet["IdR"] == getIdRole("Scrum Master"))
         {
 
 
@@ -125,7 +125,6 @@ try {
                     echo "<option value='" . $row['IdU'] . "'>" . $row['PrenomU'] . " " . $row['NomU'] . "</option>";
                 }
             }
-            echo'<option>None</option>';
             echo '</select>';
 
 //EQUIPE EST DEJA CONNU

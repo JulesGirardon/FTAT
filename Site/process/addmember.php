@@ -13,12 +13,12 @@ if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des in
         try 
         {
             $IdU = $_POST['user'];
-            $IdR = $_POST['role'];
+            $IdR = getIdRole($_POST['role']);
             $IdEq = $_POST['equipe'];
 
 
             //Verification si le nouveau membre prends le role scrum master
-            if ($IdR == "SCRUMMASTER") // REVOIR SON INDDICE 
+            if ($IdR == getIdRole("Scrum Master")) // REVOIR SON INDDICE 
             {
                 $sql = 'UPDATE rolesutilisateurprojet
                         JOIN projets ON projets.IdP = rolesutilisateurprojet.IdP
