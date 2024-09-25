@@ -24,7 +24,7 @@ try {
     $base->bindParam(":userId", $userId);
     $base->bindParam(":idEq", $idEq);
     $base->execute();
-    $Team = $base->fetch(PDO::FETCH_ASSOC);
+    $Projet = $base->fetch(PDO::FETCH_ASSOC);
 
 
     // Récupérer les tâches de l'utilisateur
@@ -66,7 +66,7 @@ try {
 <body>
     <h1></h1>
 
-    <h2><?php echo htmlspecialchars($Team['NomEqPrj']); ?></h2>
+    <h2><?php echo htmlspecialchars($Projet['NomEqPrj']); ?></h2>
 
 
 
@@ -97,18 +97,17 @@ try {
     <h2>Les membres de l'equipe</h2>
     <form action="../process/addmember.php" method="POST">
 
-        <?php 
+<?php 
 
-        if (true)      //$Team['IdR'] == 1 ) AND CAPACITE DE NOMBRE DE MEMBRE MAYBE
+        if (true)      //$Projet['IdR'] == 1 ) AND CAPACITE DE NOMBRE DE MEMBRE MAYBE
         {
 
-//MODIFIER CE ECHO POUR TRIER LES OPTION POSSIBLE PAS AVOIR 2 SCRUM MASTER
 
 //ROLE
             echo '<select id="role" name="role">
-                  <option>Membre</option>
-                  <option>ProductOwer</option>
-                  <option>ScrumMaster</option>
+                  <option>Member</option>
+                  <option>Product Owner</option>
+                  <option>Scrum Master</option>
                   </select>';
 
 
@@ -133,24 +132,26 @@ try {
             echo "<input type='hidden' name='equipe' value=" . $idEq . ">";
             echo '<button type="submit">AddMember</button>';
         }
-        ?>
+?>
     </form>
-    
-    <!--//ADD LES AUTRES PERSONNES DE L'EQUIPE EN DESSOUS DE L'AJOUT DE MEMBRE -->
-    
-    <?php
+
+<?php
+//AFFICHAGE AUTRES MEMBRES DE L'EQUIPE
+
     if (isset($bdd))
     {
-        $sql = "SELECT NomU, PrenomU FROM membre_equipe
-                JOIN utilisateurs ON utilisateurs.IdU = membre_equipe.IdU";
-        $stmt = $bdd->prepare($sql);
-        $stmt->execute();
+        $sql = "SELECT NomU, PrenomU, Statut FROM membre_equipe
+                JOIN utilisateurs ON utilisateurs.IdU = membre_equipe.IdU
+                WHERE membre_equipe.IdEq = :idEq";
+        $base = $bdd->prepare($sql);
+        $base->bindParam(":idEq", $idEq);
+        $base->execute();
 
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        while($row = $base->fetch(PDO::FETCH_ASSOC))
         {
-            echo "<a value='" . $row['IdU'] . "'>" . $row['PrenomU'] . " " . $row['NomU'] . "</a>";
+            echo "<p>" . $row['PrenomU'] . " " . $row['NomU'] . " " . $row['Statut'] . "</p>";
         }
     }
-    ?>
+?>
 </body>
 </html>
