@@ -26,12 +26,15 @@
 
             if ($currentPage < 1 || $currentPage > $totalPages) {
                 $currentPage = 1;
+                header("Location: ?page=$currentPage");
+
             }
 
             $startIndex = ($currentPage - 1) * $itemsPerPage;
             $limitedResults = array_slice($results, $startIndex, $itemsPerPage);
 
             if ($limitedResults && count($limitedResults) > 0) {
+
         ?>
                 <table border="1">
                     <thead>
@@ -46,14 +49,7 @@
                             <tr class="task-row" data-task-id="<?php echo htmlspecialchars($row['IdT']); ?>">
                                 <td><?php echo htmlspecialchars($row['TitreT']); ?></td>
                                 <td><?php echo htmlspecialchars($row['UserStoryT']); ?></td>
-                                <td>
-                                    <button onclick="handleButtonClick(this)" class="dropbtn" data-task-id="<?php echo htmlspecialchars($row['IdT']); ?>"><?php echo htmlspecialchars($row['CoutT']); ?></button>
-                                    <div id="myDropdown-<?php echo htmlspecialchars($row['IdT']); ?>" class="dropdown-content">
-                                        <a href="#home">Clicked</a>
-                                        <a href="#about">Clicked</a>
-                                        <a href="#contact">Clicked</a>
-                                    </div>
-                                </td>
+                                <td><?php echo htmlspecialchars($row['IdT']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
