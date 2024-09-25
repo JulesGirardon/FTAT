@@ -145,10 +145,20 @@ try {
         $base = $bdd->prepare($sql);
         $base->bindParam(":idEq", $idEq);
         $base->execute();
-
-        while($row = $base->fetch(PDO::FETCH_ASSOC))
+        
+        if ($Projet["IdR"] != getIdRole("Scrum Master"))
         {
-            echo "<p>" . $row['PrenomU'] . " " . $row['NomU'] . " " . $row['Statut'] . "</p>";
+            while($row = $base->fetch(PDO::FETCH_ASSOC))
+            {
+                echo "<p>" . $row['PrenomU'] . " " . $row['NomU'] . " " . $row['Statut'] . "</p>";
+            }
+        }
+        else
+        {
+            while($row = $base->fetch(PDO::FETCH_ASSOC))
+            {
+                echo "<p>" . $row['PrenomU'] . " " . $row['NomU'] . " " . $row['Statut'] . "</p>";
+            }
         }
     }
 ?>

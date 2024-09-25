@@ -3,6 +3,12 @@
 
 include '../includes/connexionBDD.php';
 
+if (!isset($_SESSION['user_id'])) 
+{
+    header("Location: login.php");
+    exit();
+}
+
 echo $_POST['user'],$_POST['role'],$_POST['equipe'];
 
 if(isset($_POST['user'],$_POST['role'],$_POST['equipe']))  //Recuperation des infos
