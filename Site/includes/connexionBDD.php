@@ -7,7 +7,7 @@ $message_class = "";
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "ftat"; 
+$dbname = "ftat"; //database name
 
 try {
     $bdd = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
@@ -16,5 +16,4 @@ try {
     $message = "Échec de la connexion :( " . $e->getMessage();
     $message_class = "error";
 }
-
-    
+?>

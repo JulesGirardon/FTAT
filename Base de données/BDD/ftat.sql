@@ -1,58 +1,105 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS sprintbacklog;
+DROP TABLE IF EXISTS sprints;
+DROP TABLE IF EXISTS taches;
+DROP TABLE IF EXISTS rolesutilisateurprojet;
+DROP TABLE IF EXISTS idees_bac_a_sable;
+DROP TABLE IF EXISTS etatstaches;
+DROP TABLE IF EXISTS prioritestaches;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS utilisateurs;
+DROP TABLE IF EXISTS equipesprj;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- Base de données : `agiletools`
 
 -- --------------------------------------------------------
+-- Table des équipes de projet
+-- --------------------------------------------------------
 
--- Table `equipesprj` (équipes de projet)
-CREATE TABLE `equipesprj` (
-  `IdEq` smallint(6) NOT NULL AUTO_INCREMENT,     -- Clé primaire auto-incrémentée
-  `NomEqPrj` VARCHAR(50) NOT NULL,                -- Augmentation de la taille du nom de l'équipe
-  PRIMARY KEY (`IdEq`)                            -- Définition de la clé primaire ici
+CREATE TABLE equipesprj (
+  IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  NomEqPrj VARCHAR(100) NOT NULL,
+  PRIMARY KEY (IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table des projets
+-- --------------------------------------------------------
 
--- Table `etatstaches` (états des tâches)
-CREATE TABLE `etatstaches` (
-  `IdEtat` smallint(4) NOT NULL AUTO_INCREMENT,   -- Ajout de l'AUTO_INCREMENT pour simplifier
-  `Etat` varchar(50) NOT NULL,
-  PRIMARY KEY (`IdEtat`)
+CREATE TABLE projets (
+  IdP INT(11) NOT NULL AUTO_INCREMENT,
+  NomP VARCHAR(100) NOT NULL,
+  DescriptionP TEXT,
+  DateDebutP DATE,
+  DateFinP DATE,
+  IdEq SMALLINT(6) NOT NULL, -- L'équipe responsable du projet
+  PRIMARY KEY (IdP),
+  CONSTRAINT FK_Projets_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Données initiales de `etatstaches`
-INSERT INTO `etatstaches` (`IdEtat`, `Etat`) VALUES
+-- --------------------------------------------------------
+-- Table des utilisateurs
+-- --------------------------------------------------------
+
+CREATE TABLE utilisateurs (
+  IdU SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  NomU VARCHAR(50) NOT NULL,
+  PrenomU VARCHAR(50) NOT NULL,
+  mail VARCHAR(50) NOT NULL,
+  MotDePasseU VARCHAR(255) NOT NULL,
+  SpecialiteU ENUM('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
+  Statut ENUM('Admin','User') NOT NULL DEFAULT 'User',
+  PRIMARY KEY (IdU)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table des rôles
+-- --------------------------------------------------------
+
+CREATE TABLE roles (
+  IdR SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  DescR VARCHAR(100) NOT NULL,
+  PRIMARY KEY (IdR)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table des états de tâche
+-- --------------------------------------------------------
+
+CREATE TABLE etatstaches (
+  IdEtat SMALLINT(4) NOT NULL,
+  Etat VARCHAR(50) NOT NULL,
+  PRIMARY KEY (IdEtat)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Insertion des états de tâches
+INSERT INTO etatstaches (IdEtat, Etat) VALUES
 (1, 'A faire'),
 (2, 'En cours'),
-(3, 'Terminé et TestUnitaire réalisé'),
+(3, 'Terminé et Test Unitaire réalisé'),
 (4, 'Test Fonctionnel Réalisé / Module intégré dans version'),
 (5, 'Intégré dans version de production');
 
 -- --------------------------------------------------------
-
--- Table `idees_bac_a_sable` (idées dans le bac à sable)
-CREATE TABLE `idees_bac_a_sable` (
-  `Id_Idee_bas` int(11) NOT NULL AUTO_INCREMENT,  -- AUTO_INCREMENT ajouté pour les idées
-  `desc_Idee_bas` varchar(300) NOT NULL,
-  `IdU` smallint(6) NOT NULL,
-  `IdEq` smallint(6) NOT NULL,
-  PRIMARY KEY (`Id_Idee_bas`),                    -- Clé primaire définie ici
-  KEY `IdU` (`IdU`),
-  KEY `IdEq` (`IdEq`),
-  CONSTRAINT `FK_IdeeBAS_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  CONSTRAINT `FK_IdeesBAS_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+-- Table des priorités de tâches
 -- --------------------------------------------------------
 
--- Table `prioritestaches` (priorités des tâches)
-CREATE TABLE `prioritestaches` (
-  `idPriorite` tinyint(1) NOT NULL AUTO_INCREMENT,  -- AUTO_INCREMENT pour simplifier la gestion des priorités
-  `Priorite` varchar(15) NOT NULL,
-  `valPriorite` tinyint(1) NOT NULL,
-  PRIMARY KEY (`idPriorite`)
+CREATE TABLE prioritestaches (
+  idPriorite TINYINT(1) NOT NULL,
+  Priorite VARCHAR(15) NOT NULL,
+  valPriorite TINYINT(1) NOT NULL,
+  PRIMARY KEY (idPriorite)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Données initiales de `prioritestaches`
-INSERT INTO `prioritestaches` (`idPriorite`, `Priorite`, `valPriorite`) VALUES
+-- Insertion des priorités de tâches
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
 (1, '1', 1),
 (2, '2', 2),
 (3, '3', 3),
@@ -64,92 +111,91 @@ INSERT INTO `prioritestaches` (`idPriorite`, `Priorite`, `valPriorite`) VALUES
 (9, 'WONT (MoSCoW)', 0);
 
 -- --------------------------------------------------------
+-- Table des idées bac à sable
+-- --------------------------------------------------------
 
--- Table `roles` (rôles des utilisateurs)
-CREATE TABLE `roles` (
-  `IdR` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT ajouté pour les rôles
-  `DescR` varchar(100) NOT NULL,
-  PRIMARY KEY (`IdR`)
+CREATE TABLE idees_bac_a_sable (
+  Id_Idee_bas INT(11) NOT NULL AUTO_INCREMENT,
+  desc_Idee_bas VARCHAR(300) NOT NULL,
+  IdU SMALLINT(6) NOT NULL,
+  IdEq SMALLINT(6) NOT NULL,
+  PRIMARY KEY (Id_Idee_bas),
+  CONSTRAINT FK_IdeesBAS_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+  CONSTRAINT FK_IdeesBAS_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table des tâches
+-- --------------------------------------------------------
 
--- Table `rolesutilisateurprojet` (liaison utilisateurs-projets-rôles)
-CREATE TABLE `rolesutilisateurprojet` (
-  `IdU` smallint(6) NOT NULL,
-  `IdR` smallint(6) NOT NULL,
-  `IdEq` smallint(6) NOT NULL,
-  PRIMARY KEY (`IdU`, `IdR`, `IdEq`),              -- Utilisation d'une clé primaire composée
-  KEY `FK_RoleUtil_Utilisateurs` (`IdU`),
-  CONSTRAINT `FK_RoleUtil_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  CONSTRAINT `FK_RoleUtil_Roles` FOREIGN KEY (`IdR`) REFERENCES `roles` (`IdR`),
-  CONSTRAINT `FK_RoleUtil_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
+CREATE TABLE taches (
+  IdT INT(11) NOT NULL AUTO_INCREMENT,
+  TitreT VARCHAR(50) NOT NULL,
+  UserStoryT VARCHAR(300) NOT NULL,
+  IdP SMALLINT(6) NOT NULL,
+  CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+  IdPriorite TINYINT(1) NOT NULL,
+  PRIMARY KEY (IdT),
+  CONSTRAINT FK_Taches_Projets FOREIGN KEY (IdP) REFERENCES projet(IdP),
+  CONSTRAINT FK_Taches_Priorite FOREIGN KEY (IdPriorite) REFERENCES prioritestaches(idPriorite)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table des sprints
+-- --------------------------------------------------------
 
--- Table `sprintbacklog` (backlog des sprints)
-CREATE TABLE `sprintbacklog` (
-  `IdT` int(11) NOT NULL,
-  `IdS` smallint(6) NOT NULL,
-  `IdU` smallint(6) NOT NULL,
-  `IdEtat` smallint(6) NOT NULL,
-  PRIMARY KEY (`IdT`),
-  KEY `IdS` (`IdS`),
-  KEY `IdU` (`IdU`),
-  KEY `IdEtat` (`IdEtat`),
-  CONSTRAINT `FK_SB_EtatTaches` FOREIGN KEY (`IdEtat`) REFERENCES `etatstaches` (`IdEtat`),
-  CONSTRAINT `FK_SB_Sprints` FOREIGN KEY (`IdS`) REFERENCES `sprints` (`IdS`),
-  CONSTRAINT `FK_SB_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
-  CONSTRAINT `FK_SB_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`)
+CREATE TABLE sprints (
+  IdS SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  DateDebS DATE NOT NULL,
+  DateFinS DATE NOT NULL,
+  RetrospectiveS VARCHAR(300) DEFAULT NULL,
+  RevueDeSprint VARCHAR(300) DEFAULT NULL,
+  IdEq SMALLINT(6) NOT NULL,
+  VelociteEqPrj DECIMAL(10, 0) NOT NULL,
+  PRIMARY KEY (IdS),
+  CONSTRAINT FK_Sprints_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table du sprint backlog
+-- --------------------------------------------------------
 
--- Table `sprints` (sprints)
-CREATE TABLE `sprints` (
-  `IdS` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT pour les sprints
-  `DateDebS` date NOT NULL,
-  `DateFinS` date NOT NULL,
-  `RetrospectiveS` varchar(300) DEFAULT NULL,
-  `RevueDeSprint` varchar(300) DEFAULT NULL,
-  `IdEq` smallint(6) NOT NULL,
-  `VelociteEqPrj` decimal(10,0) NOT NULL,
-  PRIMARY KEY (`IdS`),
-  KEY `IdEq` (`IdEq`),
-  CONSTRAINT `FK_Sprints_Equipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`)
+CREATE TABLE sprintbacklog (
+  IdT INT(11) NOT NULL,
+  IdS SMALLINT(6) NOT NULL,
+  IdU SMALLINT(6) NOT NULL,
+  IdEtat SMALLINT(6) NOT NULL,
+  PRIMARY KEY (IdT),
+  CONSTRAINT FK_SB_Taches FOREIGN KEY (IdT) REFERENCES taches(IdT),
+  CONSTRAINT FK_SB_Sprints FOREIGN KEY (IdS) REFERENCES sprints(IdS),
+  CONSTRAINT FK_SB_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+  CONSTRAINT FK_SB_EtatTaches FOREIGN KEY (IdEtat) REFERENCES etatstaches(IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table des rôles utilisateur projet
+-- --------------------------------------------------------
 
--- Table `taches` (tâches)
-CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL AUTO_INCREMENT,           -- AUTO_INCREMENT pour les tâches
-  `TitreT` varchar(50) NOT NULL,
-  `UserStoryT` varchar(300) NOT NULL,
-  `IdEq` smallint(6) NOT NULL,
-  `CoutT` enum('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL,
-  PRIMARY KEY (`IdT`),
-  KEY `IdPriorite` (`IdPriorite`),
-  KEY `IndexIdEq` (`IdEq`),
-  CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`)
+CREATE TABLE rolesutilisateurprojet (
+  IdU SMALLINT(6) NOT NULL,
+  IdP INT(11) NOT NULL, -- L'utilisateur a un rôle spécifique dans un projet
+  IdR SMALLINT(6) NOT NULL,
+  PRIMARY KEY (IdU, IdP, IdR),
+  CONSTRAINT FK_RoleUtil_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
+  CONSTRAINT FK_RoleUtil_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+  CONSTRAINT FK_RoleUtil_Roles FOREIGN KEY (IdR) REFERENCES roles(IdR)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
-
--- Table `utilisateurs` (utilisateurs)
-CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,       -- AUTO_INCREMENT pour les utilisateurs
-  `NomU` varchar(50) NOT NULL,
-  `PrenomU` varchar(50) NOT NULL,
-  `mail` varchar(50) NOT NULL,
-  `MotDePAsseU` varchar(255) NOT NULL,
-  `SpecialiteU` enum('Développeur', 'Modeleur', 'Animateur', 'UI', 'IA', 'WebComm', 'Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `Statut` enum('Admin', 'User') NOT NULL DEFAULT 'User',
-  PRIMARY KEY (`IdU`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+-- Table des membres d'équipe (relation N:N entre équipes et utilisateurs)
 -- --------------------------------------------------------
 
+CREATE TABLE membre_equipe (
+  IdEq SMALLINT(6) NOT NULL,
+  IdU SMALLINT(6) NOT NULL,
+  PRIMARY KEY (IdEq, IdU),
+  CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
+  CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+COMMIT;
