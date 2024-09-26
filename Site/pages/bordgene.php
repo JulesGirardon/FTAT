@@ -13,10 +13,11 @@ $sql_projets = "
     LEFT JOIN etatstaches et ON sb.IdEtat = et.IdEtat
     GROUP BY e.IdEq, e.NomEqPrj
 ";
-
-$stmt_projets = $conn->prepare($sql_projets);
-$stmt_projets->execute();
-$projets = $stmt_projets->fetchAll(PDO::FETCH_ASSOC);
+if(isset($bdd)){
+    $stmt_projets = $bdd->prepare($sql_projets);
+    $stmt_projets->execute();
+    $projets = $stmt_projets->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
