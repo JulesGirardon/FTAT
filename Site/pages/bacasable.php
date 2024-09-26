@@ -2,6 +2,8 @@
 include "../includes/connexionBDD.php";
 include "../includes/function.php";
 
+session_start();
+
 $userId = $_SESSION['user_id'];
 
 $req = "SELECT p.IdP, p.NomP, ru.IdR
@@ -27,7 +29,8 @@ if (isset($bdd)){
                JOIN utilisateurs u ON i.IdU = u.IdU
                WHERE i.IdEq IN ($projectIdsPlaceholder)";
     $stmtIdeas = $bdd->prepare($Idees);
-    $stmtIdeas->execute($projectIds);
+    $stmtIdeas->bindParam(':projectIds',$projectIds);
+    $stmtIdeas->execute();
     $ideas = $stmtIdeas->fetchAll(PDO::FETCH_ASSOC);
 
 }

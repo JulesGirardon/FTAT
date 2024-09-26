@@ -1,9 +1,10 @@
 <?php
 // Inclure le fichier de connexion à la base de données
-include_once "../includes/connexionBDD.php";
-
 // Démarrer la session pour vérifier les connexions
+
 session_start();
+include "../includes/connexionBDD.php";
+
 
 if(isset($bdd)){
     $stmt_projets = $bdd->prepare("SELECT p.NomP, COUNT(t.IdT) AS NombreTaches, SUM(CASE WHEN et.Etat = 'Terminé et TestUnitaire réalisé' THEN 1 ELSE 0 END) AS TachesTerminees
