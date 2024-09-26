@@ -85,7 +85,7 @@ function getTachesFromProjet($id_projet){
     include 'connexionBDD.php';
 
     try{
-        $sql = "SELECT * FROM taches WHERE taches.IdP = :id_projet";
+        $sql = "SELECT * FROM taches JOIN prioritestaches ON taches.IdPriorite = prioritestaches.idPriorite WHERE taches.IdP = :id_projet ORDER BY prioritestaches.valPriorite" ;
         $stmt = $bdd->prepare($sql);
         $stmt->bindParam('id_projet',$id_projet);
         $stmt->execute();
@@ -111,7 +111,7 @@ function getTaskFromUserInProject($id_user,$id_projet){
         $stmt->bindParam('id_projet',$id_projet);
         $stmt->execute();
 
-        $tache = $stmt->fetch(PDO::FETCH_ASSOC);
+        $tache = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if ($tache){
             return $tache;
         } else{
@@ -145,18 +145,56 @@ function getRoleFromUserInProject($id_user,$id_projet){
     }
 }
 
-function getStateFromTaskOfUser($id_task,$id_user){
+function getStateFromTask($id_task){
     include 'connexionBDD.php';
     try{
-        $sql = "SELECT etatstaches.Etat FROM etatstaches JOIN sprintbacklog ON sprintbacklog.IdEtat = etatstaches.IdEtat WHERE sprintbacklog.IdT = :id_task AND sprintbacklog.IdU = :id_user";
+        $sql = "SELECT etatstaches.Etat FROM etatstaches JOIN sprintbacklog ON sprintbacklog.IdEtat = etatstaches.IdEtat WHERE sprintbacklog.IdT = :id_task";
         $stmt = $bdd->prepare($sql);
         $stmt->bindParam('id_task',$id_task);
-        $stmt->bindParam('id_user',$id_user);
         $stmt->execute();
 
         $state = $stmt->fetch(PDO::FETCH_COLUMN);
         if ($state){
             return $state;
+        } else{
+            return null;
+        }
+    } catch (PDOException $e){
+        return null;
+    }
+}
+
+
+function getPriorityFromTask($id_task){
+    include 'connexionBDD.php';
+    try{
+        $sql = "SELECT prioritestaches.valPriorite FROM prioritestaches JOIN taches ON prioritestaches.idPriorite = taches.IdPriorite WHERE taches.IdT = :id_task";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam('id_task',$id_task);
+        $stmt->execute();
+
+        $priority = $stmt->fetch(PDO::FETCH_COLUMN);
+        if ($priority){
+            return $priority;
+        } else{
+            return null;
+        }
+    } catch (PDOException $e){
+        return null;
+    }
+}
+
+function getUserFromTask($id_task){
+    include 'connexionBDD.php';
+    try{
+        $sql = "SELECT * FROM utilisateurs JOIN sprintbacklog ON utilisateurs.IdU = sprintbacklog.IdU WHERE sprintbacklog.IdT = :id_task";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam('id_task',$id_task);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user){
+            return $user;
         } else{
             return null;
         }
