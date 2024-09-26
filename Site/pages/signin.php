@@ -1,13 +1,10 @@
 <?php
 session_start();
-
-/*
-if (($_SESSION['is_logged_in'] && $_SESSION['statut'] !== "Admin") || !$_SESSION['is_logged_in']) {
-    $_SESSION['error'] = 'not_admin';
-    header("Location: ../index.php");
-    exit();
-}
-*/
+// if (($_SESSION['is_logged_in'] && $_SESSION['statut'] !== "Admin") || !$_SESSION['is_logged_in']) {
+//     $_SESSION['error'] = 'not_admin';
+//     header("Location: ../index.php");
+//     exit();
+// }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +79,7 @@ if (($_SESSION['is_logged_in'] && $_SESSION['statut'] !== "Admin") || !$_SESSION
 
             
         <div class="form-group">
-            <button type="submit">S'inscrire</button>
+            <button type="submit">Inscrire le nouvel utilisateur</button>
         </div>
     </form>
     <?php       
