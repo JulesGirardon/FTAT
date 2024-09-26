@@ -73,12 +73,12 @@
 
     <span id="char-count">Poster un commentaire (255 caractères restants)</span>
     <br>
-    <form action="../process/pokerplanning_process.php" method="POST" onsubmit="return nextTask();">
+    <form action="../process/pokerplanning_process.php" method="POST">
         <input type="hidden" name="userId" value="<?php echo isset($_SESSION['IdUser']) ? htmlspecialchars($_SESSION['IdUser']) : ''; ?>">
-        <input type="hidden" name="IdT" value="<?php echo isset($currentPage) ? htmlspecialchars($currentPage) : '?'; ?>">
+        <input type="hidden" name="IdT" value="<?php echo isset($currentTask["IdT"]) ? htmlspecialchars($currentTask["IdT"]) : '?'; ?>">
         <textarea id="comment" name="commentContent" maxlength="255" oninput="adjustTextAreaSize(this), ajustRemainChar(this)"></textarea>
         <input type="hidden" name="difficulty" value="<?php echo isset($difficulty) ? htmlspecialchars($difficulty) : '?'; ?>">
-        <input type="submit" onclick="nextTask()" class="next-button" value="Suivant">
+        <input type="submit" class="next-button" value="Suivant">
     </form>
 
     <a href="./planning_poker_resume.php">Planning formulaire resume </a>

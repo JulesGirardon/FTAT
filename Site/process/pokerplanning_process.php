@@ -9,16 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $commentContent = $_POST['commentContent'];
     $difficulty = $_POST['difficulty'];
 
-    insertCout($userId, $idT, $commentContent, $difficulty);
+    //insertCout($userId, $idT, $commentContent, $difficulty);
 
-    $itemsPerPage = isset($_SESSION["itemsPerPage"]) ? $_SESSION["itemsPerPage"] : 10;
-    $totalTasks = count(displayAllTasks($_SESSION["currPrj"]));
+    $nextPage = $idT +1;
     
-    $totalPages = ceil($totalTasks / $itemsPerPage);
-
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $nextPage = min($currentPage + 1, $totalPages);
-
     $baseUrl = '../pages/';
     $redirectUrl = $baseUrl . 'planning_poker.php?page=' . $nextPage;
 
