@@ -23,14 +23,11 @@ if (empty(getProjectWhereScrumMaster($_SESSION['user_id']))) {
     </head>
     <body>
         <form method="POST" action="../process/create_sprint_process.php">
+            <label for="date_deb">Date de début du sprint</label>
+            <input type="date" id="date_deb" name="date_deb">
+
             <label for="date_fin">Date de fin du sprint</label>
             <input type="date" id="date_fin" name="date_fin">
-
-            <label for="retrospective">Rétrospective</label>
-            <textarea id="retrospective" name="retrospective" rows="5" cols="33"></textarea>
-
-            <label for="revue">Revue du sprint</label>
-            <textarea id="revue" name="revue" rows="5" cols="33"></textarea>
 
             <label for="select_project_to_add_sprint">Projet</label>
             <select id="select_project_to_add_sprint" name="select_project_to_add_sprint">
@@ -54,10 +51,21 @@ if (empty(getProjectWhereScrumMaster($_SESSION['user_id']))) {
             var year = now.getFullYear();
             var month = ('0' + (now.getMonth() + 1)).slice(-2);
             var day = ('0' + now.getDate()).slice(-2);
-            var datetime = year + '-' + month + '-' + day;
+            var datetime_deb = year + '-' + month + '-' + day;
 
-            document.getElementById("date_fin").value = datetime;
-            document.getElementById("date_fin").min = datetime;
+            var dateDebInput = document.getElementById("date_deb");
+            var dateFinInput = document.getElementById("date_fin");
+
+            dateDebInput.value = datetime_deb;
+            dateDebInput.min = datetime_deb;
+
+            dateFinInput.value = datetime_deb;
+            dateFinInput.min = datetime_deb;
+
+            dateDebInput.addEventListener('input', function() {
+                dateFinInput.value = this.value;
+                dateFinInput.min = this.value;
+            });
         </script>
     </body>
 </html>
