@@ -37,7 +37,11 @@
             <?php endif; ?>
         <?php endforeach; ?>
         </select>
-
+        <select name="id_role" id="role" required>
+            <option value="">-- Sélectionner un role --</option>
+            <option value="2">Product owner</option>
+            <option value="3">Membre</option>
+        </select>
         <input type="hidden" name="id_projet" value="<?php echo $id_projet; ?>">
 
         <button type="submit">Ajouter l'utilisateur au projet</button>

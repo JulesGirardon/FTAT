@@ -14,10 +14,11 @@ include_once 'function.php';
 
 <aside>
   <ul>
+    <li><a href="/Ftat/Site/index.php">FTAT (c'est pas un projet mais pour revenir a l'index)</a></li>
     <?php if (isset($projets) && $projets): ?>
       <?php foreach ($projets as $projet): ?>
         <li>
-          <a href="pages/projet.php?id=<?php echo $projet['IdP']; ?>">
+          <a href="/Ftat/Site/pages/projet.php?id=<?php echo $projet['IdP']; ?>">
             <?php echo $projet['NomP']; ?>
           </a>
         </li>

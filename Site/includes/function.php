@@ -20,14 +20,14 @@ function getIdRole($role) {
     return null;
 }
 
-function getEquipeFromUser($id_user){
+function getEquipesFromUser($id_user){
     include 'connexionBDD.php';
     try {
         $sql = "SELECT membre_equipe.IdEq FROM membre_equipe WHERE membre_equipe.IdU = :id_user";
         $stmt = $bdd->prepare($sql);
         $stmt->bindParam(':id_user', $id_user);
         $stmt->execute();
-        $id = $stmt->fetch(PDO::FETCH_ASSOC);
+        $id = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($id && isset($id['IdEq'])) {
             return $id['IdEq']; 
@@ -42,15 +42,10 @@ function getEquipeFromUser($id_user){
 function getProjetsFromUser($id_user) {
     include 'connexionBDD.php';
 
-    $id_equipe = getEquipeFromUser($id_user);
-    if (!$id_equipe) {
-        return null;
-    }
-
     try {
-        $sql = "SELECT * FROM projets WHERE projets.IdEq = :id_equipe";
+        $sql = "SELECT * FROM projets JOIN rolesutilisateurprojet ON projets.IdP = rolesutilisateurprojet.IdP WHERE rolesutilisateurprojet.IdU = :id_user";
         $stmt = $bdd->prepare($sql);
-        $stmt->bindParam(':id_equipe', $id_equipe);
+        $stmt->bindParam(':id_user', $id_user);
         $stmt->execute();
 
         $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -69,9 +64,9 @@ function getMembresFromProjet($id_projet){
     include 'connexionBDD.php';
 
     try{
-        $sql = "SELECT * FROM utilisateurs JOIN membre_equipe ON utilisateurs.IdU = membre_equipe.IdU JOIN projets ON projets.IdEq = membre_equipe.IdEq WHERE projets.IdP = :id_projet";
+        $sql = "SELECT * FROM utilisateurs JOIN rolesutilisateurprojet ON utilisateurs.IdU = rolesutilisateurprojet.IdU  WHERE rolesutilisateurprojet.IdP = :id_projet";
         $stmt = $bdd->prepare($sql);
-        $stmt->bindParam('id_projet',$id_projet);
+        $stmt->bindValue(':id_projet', $id_projet);
         $stmt->execute();
 
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -81,7 +76,7 @@ function getMembresFromProjet($id_projet){
         } else{
             return null;
         }
-    } catch (PDOExeption $e){
+    } catch (PDOException $e){
         return null;
     }
 }
@@ -102,7 +97,7 @@ function getTachesFromProjet($id_projet){
         } else{
             return null;
         }
-    } catch (PDOExeption $e){
+    } catch (PDOException $e){
         return null;
     }
 }
@@ -122,7 +117,7 @@ function getTaskFromUserInProject($id_user,$id_projet){
         } else{
             return null;
         }
-    }catch (PDOExeption $e){
+    }catch (PDOException $e){
         return null;
 
     }
@@ -144,7 +139,7 @@ function getRoleFromUserInProject($id_user,$id_projet){
         } else{
             return null;
         }
-    } catch (PDOExeption $e){
+    } catch (PDOException $e){
         return null;
 
     }
@@ -165,7 +160,7 @@ function getStateFromTaskOfUser($id_task,$id_user){
         } else{
             return null;
         }
-    } catch (PDOExeption $e){
+    } catch (PDOException $e){
         return null;
     }
 }

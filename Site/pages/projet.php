@@ -13,7 +13,7 @@
 
     $sql = "SELECT * FROM projets WHERE IdP = :id_projet";
     $stmt = $bdd->prepare($sql);
-    $stmt->bindParam(':id_projet', $id_projet, PDO::PARAM_INT);
+    $stmt->bindParam(':id_projet', $id_projet);
     $stmt->execute();
 
     $projet = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -48,62 +48,50 @@
         </tr>
 
         <?php if (isset($membres) && $membres): ?>
-    <?php foreach ($membres as $membre): ?>
-        <tr>
-            <td>
-                <?php 
-                if (isset($membre['PrenomU']) && isset($membre['NomU'])) {
-                    echo $membre['PrenomU'] . ' ' . $membre['NomU'];
-                } else {
-                    echo "Nom et prénom non sélectionnés";
-                }
-                ?>
-            </td>
-            <td>
-                <?php 
-                if (isset($membre['SpecialiteU'])) {
-                    echo $membre['SpecialiteU'];
-                } else {
-                    echo "Spécialité non sélectionnée";
-                }
-                ?>
-            </td>
-            <td>
-                <?php 
-                $role = getRoleFromUserInProject($membre['IdU'], $projet['IdP']);
-                if (isset($role['DescR'])) {
-                    echo $role['DescR'];
-                } else {
-                    echo "Rôle non sélectionné";
-                }
-                ?>
-            </td>
-            <td>
-                <?php 
-                $task = getTaskFromUserInProject($membre['IdU'], $projet['IdP']);
-                if (isset($task['TitreT'])) {
-                    echo $task['TitreT'];
-                } else {
-                    echo "Aucune tâche assignée";
-                }
-                ?>
-            </td>
-            <td>
-                <?php 
-                if (isset($task['IdT'])) {
-                    $state = getStateFromTaskOfUser($task['IdT'], $membre['IdU']);
-                    if ($state) {
-                        echo $state;
-                    } else {
-                        echo "État non sélectionné";
-                    }
-                } else {
-                    echo "Aucune tâche assignée";
-                }
-                ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
+            <?php foreach ($membres as $membre):?>
+                <tr>
+                    <td>
+                        <?php 
+                         echo $membre['PrenomU'] . ' ' . $membre['NomU'];
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                            echo $membre['SpecialiteU'];
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                            $role = getRoleFromUserInProject($membre['IdU'], $projet['IdP']);
+                            echo $role['DescR'];
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                        $task = getTaskFromUserInProject($membre['IdU'], $projet['IdP']);
+                        if (isset($task['TitreT'])) {
+                            echo $task['TitreT'];
+                        } else {
+                            echo "Aucune tâche assignée <a href='assign_task.php'>Assigner une tache</a>";
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <?php 
+                        if (isset($task['IdT'])) {
+                            $state = getStateFromTaskOfUser($task['IdT'], $membre['IdU']);
+                            if ($state) {
+                                echo $state;
+                            } else {
+                                echo "État non sélectionné";
+                            }
+                        } else {
+                            echo "Aucune tâche assignée";
+                        }
+                        ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         <?php else: ?>
             <li>
                 <?php echo isset($message) ? $message : "Aucun projet disponible."; ?>

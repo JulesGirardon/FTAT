@@ -7,7 +7,7 @@ $message_class = "";
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "ftat"; //database name
+$dbname = "ftat";
 
 try {
     $bdd = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);

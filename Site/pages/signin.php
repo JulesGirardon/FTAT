@@ -79,7 +79,7 @@ if (($_SESSION['is_logged_in'] && $_SESSION['statut'] !== "Admin") || !$_SESSION
 
             
         <div class="form-group">
-            <button type="submit">S'inscrire</button>
+            <button type="submit">Inscrire le nouvel utilisateur</button>
         </div>
     </form>
     <?php       
