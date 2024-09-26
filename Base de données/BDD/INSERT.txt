@@ -29,12 +29,6 @@ INSERT INTO etatstaches (IdEtat, Etat) VALUES (8, 'Bloqué');
 INSERT INTO etatstaches (IdEtat, Etat) VALUES (9, 'En test');
 INSERT INTO etatstaches (IdEtat, Etat) VALUES (10, 'Abandonné');
 
-INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (10, 'Low', 1);
-INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (11, 'Medium', 3);
-INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (12, 'High', 5);
-INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (13, 'Urgent', 6);
-INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (14, 'Critical', 7);
-
 INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Amélioration de l\'interface utilisateur.', 1, 1);
 INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Automatisation des tests unitaires.', 2, 2);
 INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Intégration de la reconnaissance vocale.', 3, 3);
