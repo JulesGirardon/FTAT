@@ -199,3 +199,17 @@ function getRetroFromSprint($id_sprint) {
         return $retro['RetrospectiveS'] ? $retro['RetrospectiveS'] : null;
     }
 }
+
+function getRevueFromSprint($id_sprint) {
+    include 'connexionBDD.php';
+
+    if (isset($bdd, $id_sprint)) {
+        $sql = "SELECT s.RevueDeSprint FROM ftat.sprints AS s WHERE s.IdS = :idSprint";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam(':idSprint', $id_sprint);
+        $stmt->execute();
+        $retro = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $retro['RevueDeSprint'] ? $retro['RevueDeSprint'] : null;
+    }
+}

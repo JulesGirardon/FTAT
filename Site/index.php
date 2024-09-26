@@ -41,7 +41,9 @@ else{
             echo '<p><a href="pages/create_sprintbacklog.php"> Créer un sprintbacklog</p>';
             echo '<p><a href="pages/add_retrospective.php"> Ajouter une rétrospective</p>';
 
+
         }
+        echo '<p><a href="pages/add_revue.php"> Ajouter une revue</p>';
         ?>
         <?php
         if ($_SESSION['is_logged_in']){
