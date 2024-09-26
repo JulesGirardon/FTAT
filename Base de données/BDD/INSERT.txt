@@ -1,0 +1,78 @@
+INSERT INTO equipesprj (NomEqPrj) VALUES ('Équipe Alpha');
+INSERT INTO equipesprj (NomEqPrj) VALUES ('Équipe Beta');
+INSERT INTO equipesprj (NomEqPrj) VALUES ('Équipe Gamma');
+INSERT INTO equipesprj (NomEqPrj) VALUES ('Équipe Delta');
+INSERT INTO equipesprj (NomEqPrj) VALUES ('Équipe Epsilon');
+
+
+INSERT INTO projets (NomP, DescriptionP, DateDebutP, DateFinP, IdEq) VALUES ('Projet A', 'Développement d\'une application mobile.', '2023-01-01', '2023-06-30', 1);
+INSERT INTO projets (NomP, DescriptionP, DateDebutP, DateFinP, IdEq) VALUES ('Projet B', 'Migration de la base de données.', '2023-02-01', '2023-07-31', 2);
+INSERT INTO projets (NomP, DescriptionP, DateDebutP, DateFinP, IdEq) VALUES ('Projet C', 'Refonte du site web.', '2023-03-01', '2023-08-31', 3);
+INSERT INTO projets (NomP, DescriptionP, DateDebutP, DateFinP, IdEq) VALUES ('Projet D', 'Intégration de l\'IA dans le produit.', '2023-04-01', '2023-09-30', 4);
+INSERT INTO projets (NomP, DescriptionP, DateDebutP, DateFinP, IdEq) VALUES ('Projet E', 'Développement d\'une API REST.', '2023-05-01', '2023-10-31', 5);
+
+INSERT INTO utilisateurs (NomU, PrenomU, mail, MotDePasseU, SpecialiteU, Statut) VALUES ('Dupont', 'Jean', 'jean.dupont@example.com', 'password123', 'Développeur', 'User');
+INSERT INTO utilisateurs (NomU, PrenomU, mail, MotDePasseU, SpecialiteU, Statut) VALUES ('Martin', 'Sophie', 'sophie.martin@example.com', 'password123', 'UI', 'User');
+INSERT INTO utilisateurs (NomU, PrenomU, mail, MotDePasseU, SpecialiteU, Statut) VALUES ('Durand', 'Paul', 'paul.durand@example.com', 'password123', 'Modeleur', 'User');
+INSERT INTO utilisateurs (NomU, PrenomU, mail, MotDePasseU, SpecialiteU, Statut) VALUES ('Lefevre', 'Marie', 'marie.lefevre@example.com', 'password123', 'Animateur', 'User');
+INSERT INTO utilisateurs (NomU, PrenomU, mail, MotDePasseU, SpecialiteU, Statut) VALUES ('Bernard', 'Pierre', 'pierre.bernard@example.com', 'password123', 'Polyvalent', 'Admin');
+
+INSERT INTO roles (DescR) VALUES ('Scrum Master');
+INSERT INTO roles (DescR) VALUES ('Product Owner');
+INSERT INTO roles (DescR) VALUES ('Développeur');
+INSERT INTO roles (DescR) VALUES ('Testeur');
+INSERT INTO roles (DescR) VALUES ('Analyste');
+
+INSERT INTO etatstaches (IdEtat, Etat) VALUES (6, 'Rejeté');
+INSERT INTO etatstaches (IdEtat, Etat) VALUES (7, 'En attente de validation');
+INSERT INTO etatstaches (IdEtat, Etat) VALUES (8, 'Bloqué');
+INSERT INTO etatstaches (IdEtat, Etat) VALUES (9, 'En test');
+INSERT INTO etatstaches (IdEtat, Etat) VALUES (10, 'Abandonné');
+
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (10, 'Low', 1);
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (11, 'Medium', 3);
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (12, 'High', 5);
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (13, 'Urgent', 6);
+INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES (14, 'Critical', 7);
+
+INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Amélioration de l\'interface utilisateur.', 1, 1);
+INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Automatisation des tests unitaires.', 2, 2);
+INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Intégration de la reconnaissance vocale.', 3, 3);
+INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Ajout d\'une fonctionnalité de recherche.', 4, 4);
+INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdP) VALUES ('Création d\'un tableau de bord personnalisé.', 5, 5);
+
+INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES ('Tâche 1', 'En tant qu\'utilisateur, je souhaite me connecter avec un mot de passe sécurisé.', 1, '5', 1);
+INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES ('Tâche 2', 'En tant qu\'admin, je veux créer des comptes utilisateurs.', 1, '3', 2);
+INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES ('Tâche 3', 'En tant qu\'utilisateur, je souhaite pouvoir réinitialiser mon mot de passe.', 2, '3', 3);
+INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES ('Tâche 4', 'En tant qu\'admin, je souhaite pouvoir visualiser les logs.', 2, '10', 4);
+INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES ('Tâche 5', 'En tant qu\'utilisateur, je veux recevoir des notifications.', 3, '5', 5);
+
+INSERT INTO sprints (DateDebS, DateFinS, RetrospectiveS, RevueDeSprint, IdP, VelociteEqPrj) VALUES ('2023-01-01', '2023-01-15', 'Sprint réussi.', 'Démonstration validée.', 1, 50);
+INSERT INTO sprints (DateDebS, DateFinS, RetrospectiveS, RevueDeSprint, IdP, VelociteEqPrj) VALUES ('2023-01-16', '2023-01-31', 'Quelques blocages sur les tests.', 'Livrable non validé.', 1, 30);
+INSERT INTO sprints (DateDebS, DateFinS, RetrospectiveS, RevueDeSprint, IdP, VelociteEqPrj) VALUES ('2023-02-01', '2023-02-15', 'Bonne collaboration.', 'Démo réussie.', 2, 40);
+INSERT INTO sprints (DateDebS, DateFinS, RetrospectiveS, RevueDeSprint, IdP, VelociteEqPrj) VALUES ('2023-02-16', '2023-02-28', 'Problèmes de communication.', 'Livrable accepté.', 2, 35);
+INSERT INTO sprints (DateDebS, DateFinS, RetrospectiveS, RevueDeSprint, IdP, VelociteEqPrj) VALUES ('2023-03-01', '2023-03-15', 'Sprint bien mené.', 'Tous les objectifs atteints.', 3, 55);
+
+INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (1, 1, 1, 1);
+INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (2, 1, 2, 2);
+INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (3, 2, 3, 3);
+INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (4, 2, 4, 4);
+INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (5, 3, 5, 5);
+
+INSERT INTO rolesutilisateurprojet (IdU, IdP, IdR) VALUES (1, 1, 1); -- Utilisateur 1 a le rôle de Scrum Master dans le Projet 1
+INSERT INTO rolesutilisateurprojet (IdU, IdP, IdR) VALUES (2, 1, 2); -- Utilisateur 2 a le rôle de Product Owner dans le Projet 1
+INSERT INTO rolesutilisateurprojet (IdU, IdP, IdR) VALUES (3, 2, 3); -- Utilisateur 3 a le rôle de Développeur dans le Projet 2
+INSERT INTO rolesutilisateurprojet (IdU, IdP, IdR) VALUES (4, 2, 4); -- Utilisateur 4 a le rôle de Testeur dans le Projet 2
+INSERT INTO rolesutilisateurprojet (IdU, IdP, IdR) VALUES (5, 3, 5); -- Utilisateur 5 a le rôle d'Analyste dans le Projet 3
+
+INSERT INTO membre_equipe (IdEq, IdU) VALUES (1, 1);
+INSERT INTO membre_equipe (IdEq, IdU) VALUES (2, 2);
+INSERT INTO membre_equipe (IdEq, IdU) VALUES (3, 3);
+INSERT INTO membre_equipe (IdEq, IdU) VALUES (4, 4);
+INSERT INTO membre_equipe (IdEq, IdU) VALUES (5, 5);
+
+INSERT INTO CoutMembreTaches (IdU, IdT, Commentaire, CoutMT) VALUES (1, 1, 'Travail en cours.', '3');
+INSERT INTO CoutMembreTaches (IdU, IdT, Commentaire, CoutMT) VALUES (2, 2, 'Tâche complexe.', '5');
+INSERT INTO CoutMembreTaches (IdU, IdT, Commentaire, CoutMT) VALUES (3, 3, 'Estimation élevée.', '10');
+INSERT INTO CoutMembreTaches (IdU, IdT, Commentaire, CoutMT) VALUES (4, 4, 'Bug rencontré.', '15');
+INSERT INTO CoutMembreTaches (IdU, IdT, Commentaire, CoutMT) VALUES (5, 5, 'Livrable terminé.', '5');

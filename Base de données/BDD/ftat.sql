@@ -4,6 +4,9 @@ SET time_zone = "+00:00";
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+
+DROP TABLE IF EXISTS CoutMembreTaches;
+DROP TABLE IF EXISTS membre_equipe;
 DROP TABLE IF EXISTS sprintbacklog;
 DROP TABLE IF EXISTS sprints;
 DROP TABLE IF EXISTS taches;
@@ -13,8 +16,9 @@ DROP TABLE IF EXISTS etatstaches;
 DROP TABLE IF EXISTS prioritestaches;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS utilisateurs;
-DROP TABLE IF EXISTS equipesprj;
 DROP TABLE IF EXISTS projets;
+DROP TABLE IF EXISTS equipesprj;
+DROP FUNCTION IF EXISTS getIdRole;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -198,6 +202,21 @@ CREATE TABLE membre_equipe (
                                CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
                                CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+-- Table des CoutMembreTaches (relation : entre Membre et Tache)
+-- --------------------------------------------------------
+
+CREATE TABLE CoutMembreTaches (
+      IdU SMALLINT(6) NOT NULL,
+      IdT INT(11) NOT NULL,
+      Commentaire VARCHAR(255),
+      CoutMT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+      PRIMARY KEY (IdU, IdT),
+      CONSTRAINT FK_Id_Tache FOREIGN KEY (IdT) REFERENCES taches(IdT),
+      CONSTRAINT FK_Id_Utilisateur FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DELIMITER $$
 
