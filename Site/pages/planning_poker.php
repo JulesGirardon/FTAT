@@ -18,43 +18,44 @@
     include_once "../process/function_tasks.php";
     $itemsPerPage = 1;
     $results = displayAllTasks($_SESSION["currPrj"]);
-    if ($results && count($results) > 0) {
-        $totalPages = ceil(count($results) / $itemsPerPage);
-        $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $totalPages = ceil(count($results) / $itemsPerPage);
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
-        if ($currentPage < 1 || $currentPage > $totalPages) {
-            $currentPage = 1;
-            header("Location: ?page=$currentPage");
-        }
+    if ($currentPage < 1 || $currentPage > $totalPages) {
+        $currentPage = 1;
+        header("Location: ?page=$currentPage");
+    }
 
-        $difficulty = "?";
-        $startIndex = ($currentPage - 1) * $itemsPerPage;
-        $limitedResults = array_slice($results, $startIndex, $itemsPerPage);
+    $difficulty = "?";
+    $startIndex = ($currentPage - 1) * $itemsPerPage;
+    $limitedResults = array_slice($results, $startIndex, $itemsPerPage);
 
-        if ($limitedResults && count($limitedResults) > 0) {
+    if ($limitedResults && count($limitedResults) > 0) {
+        $currentTask = end($limitedResults);
+        unset($limitedResults[array_key_last($limitedResults)]);
+        $limitedResults[] = $currentTask;
     ?>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>User Story</th>
-                        <th>Difficulté</th>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>User Story</th>
+                    <th>Difficulté</th>
+                </tr>
+            </thead>
+            <tbody id="task-body">
+                <?php foreach ($limitedResults as $row): ?>
+                    <tr class="task-row" data-task-id="<?php echo htmlspecialchars($row['IdT']); ?>">
+                        <td><?php echo htmlspecialchars($row['TitreT']); ?></td>
+                        <td><?php echo htmlspecialchars($row['UserStoryT']); ?></td>
+                        <td><span id="difficulty-display"><?php echo htmlspecialchars($difficulty); ?></span></td>
                     </tr>
-                </thead>
-                <tbody id="task-body">
-                    <?php foreach ($limitedResults as $index => $row): ?>
-                        <tr class="task-row" data-task-id="<?php echo htmlspecialchars($row['IdT']); ?>">
-                            <td><?php echo htmlspecialchars($row['TitreT']); ?></td>
-                            <td><?php echo htmlspecialchars($row['UserStoryT']); ?></td>
-                            <td><span id="difficulty-display"><?php echo htmlspecialchars($difficulty); ?></span></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     <?php
-        } else {
-            echo "Aucune tâche trouvée.";
-        }
+    } else {
+        echo "Aucune tâche trouvée.";
     }
     ?>
 
@@ -74,12 +75,12 @@
     <br>
     <form action="../process/pokerplanning_process.php" method="POST" onsubmit="return nextTask();">
         <input type="hidden" name="userId" value="<?php echo isset($_SESSION['IdUser']) ? htmlspecialchars($_SESSION['IdUser']) : ''; ?>">
-        <input type="hidden" name="projectId" value="<?php echo isset($_SESSION["currPrj"]) ? htmlspecialchars($_SESSION["currPrj"]) : ''; ?>">
+        <input type="hidden" name="IdT" value="<?php echo isset($currentPage) ? htmlspecialchars($currentPage) : '?'; ?>">
         <textarea id="comment" name="commentContent" maxlength="255" oninput="adjustTextAreaSize(this), ajustRemainChar(this)"></textarea>
         <input type="hidden" name="difficulty" value="<?php echo isset($difficulty) ? htmlspecialchars($difficulty) : '?'; ?>">
         <input type="submit" onclick="nextTask()" class="next-button" value="Suivant">
-
     </form>
+
     <a href="./planning_poker_resume.php">Planning formulaire resume </a>
 
     <script src="../scripts/scripts.js"></script>
