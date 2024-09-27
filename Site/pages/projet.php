@@ -132,7 +132,8 @@
                     <td>
                         <?php
                             $user = getUserFromTask($tache['IdT']);
-                            echo $user['PrenomU'] . ' ' . $user['NomU'];
+                            if ($user) echo $user['PrenomU'] . ' ' . $user['NomU'];
+                            else echo "Pas d'utilisateur assigné"
                         ?>
                     </td>
                     <td>

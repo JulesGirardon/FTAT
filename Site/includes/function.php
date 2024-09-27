@@ -85,7 +85,7 @@ function getTachesFromProjet($id_projet){
     include 'connexionBDD.php';
 
     try{
-        $sql = "SELECT * FROM taches JOIN prioritestaches ON taches.IdPriorite = prioritestaches.idPriorite WHERE taches.IdP = :id_projet ORDER BY prioritestaches.valPriorite" ;
+        $sql = "SELECT * FROM taches JOIN prioritestaches ON taches.IdPriorite = prioritestaches.idPriorite WHERE taches.IdP = :id_projet ORDER BY prioritestaches.valPriorite DESC";
         $stmt = $bdd->prepare($sql);
         $stmt->bindParam('id_projet',$id_projet);
         $stmt->execute();
