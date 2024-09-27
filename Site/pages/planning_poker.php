@@ -11,9 +11,8 @@
 <body>
     <?php
     session_start();
-
-    $_SESSION["currPrj"] = 1;
-    $_SESSION["IdUser"] = 1;
+    $_SESSION["currPrj"] = 1; // MODIFIER AVEC LA SESSION PROJET ACTUEL
+    $_SESSION["IdUser"] = 1; // MODIFIER AVEC LA SESSION USER ACTUEL
 
     if (!isset($_SESSION['NextPage'])) {
         $_SESSION['NextPage'] = 0;
@@ -24,14 +23,9 @@
     include_once "../process/function_tasks.php";
     $results = displayAllTasks($_SESSION["currPrj"]);
     $difficulty = "?";
-
     if ($_SESSION["NextPage"] >= count($results)):
-
         header("Location:../index.php");
-
-
-    else:
-    ?>
+    else: ?>
         <table border="1">
             <thead>
                 <tr>
@@ -46,8 +40,7 @@
                     $taskId = $results[$_SESSION["NextPage"]]['IdT'];
                     $taskTitle = htmlspecialchars($results[$_SESSION["NextPage"]]['TitreT']);
                     $taskStory = htmlspecialchars($results[$_SESSION["NextPage"]]['UserStoryT']);
-                    $difficultyDisplay = htmlspecialchars($difficulty);
-                ?>
+                    $difficultyDisplay = htmlspecialchars($difficulty); ?>
                     <tr class="task-row" data-task-id="<?php echo $taskId; ?>">
                         <td><?php echo $taskId; ?></td>
                         <td><?php echo $taskTitle; ?></td>
@@ -57,7 +50,6 @@
                 <?php endif; ?>
             </tbody>
         </table>
-
         <div class="button-container">
             <button onclick="setDifficulty(this)" data-difficulty="?">?</button>
             <button onclick="setDifficulty(this)" data-difficulty="1">1</button>
@@ -68,7 +60,6 @@
             <button onclick="setDifficulty(this)" data-difficulty="25">25</button>
             <button onclick="setDifficulty(this)" data-difficulty="999">999</button>
         </div>
-
         <span id="char-count">Poster un commentaire (255 caractères restants)</span>
         <br>
         <form action="../process/pokerplanning_process.php" method="POST">
@@ -78,7 +69,6 @@
             <input type="hidden" name="difficulty" value="<?php echo isset($difficulty) ? htmlspecialchars($difficulty) : '?'; ?>">
             <input type="submit" class="next-button" value="Suivant">
         </form>
-
         <a href="./planning_poker_resume.php">Planning formulaire resume </a>
     <?php endif; ?>
 
