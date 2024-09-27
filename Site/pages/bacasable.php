@@ -21,15 +21,26 @@ if (isset($bdd)){
         echo "You are not involved in any projects.";
         exit;
     }
-    $projectIdsPlaceholder = implode(',', array_fill(0, count($projectIds), '?'));
 
-    $Idees = "SELECT i.*, e.NomEqPrj, u.NomU, u.PrenomU
-               FROM idees_bac_a_sable i
-               JOIN equipesprj e ON i.IdEq = e.IdEq
-               JOIN utilisateurs u ON i.IdU = u.IdU
-               WHERE i.IdEq IN ($projectIdsPlaceholder)";
+    $placeholders = array_map(function($key) { return ":id" . $key; }, array_keys($projectIds));
+    $projectIdsPlaceholder = implode(',', $placeholders);
+    
+
+    $Idees = "SELECT i.*, p.NomP, u.NomU, u.PrenomU
+              FROM idees_bac_a_sable i
+              JOIN projets p ON i.IdP = p.IdP
+              JOIN utilisateurs u ON i.IdU = u.IdU
+              WHERE i.IdP IN ($projectIdsPlaceholder)";
+    
+
     $stmtIdeas = $bdd->prepare($Idees);
-    $stmtIdeas->bindParam(':projectIds',$projectIds);
+    
+
+    foreach ($projectIds as $key => $id) {
+        $stmtIdeas->bindValue(":id" . $key, $id, PDO::PARAM_INT);
+    }
+    
+
     $stmtIdeas->execute();
     $ideas = $stmtIdeas->fetchAll(PDO::FETCH_ASSOC);
 
@@ -50,7 +61,7 @@ if (isset($bdd)){
     <table>
         <thead>
         <tr>
-            <th>Nom de l'équipe</th>
+            <th>Nom du  projet</th>
             <th>Description de l'idée</th>
             <th>Auteur</th>
             <th>Actions</th>
@@ -59,14 +70,14 @@ if (isset($bdd)){
         <tbody>
         <?php foreach ($ideas as $idea): ?>
             <tr>
-                <td><?= htmlspecialchars($idea['NomEqPrj']) ?></td>
+                <td><?= htmlspecialchars($idea['NomP']) ?></td>
                 <td><?= htmlspecialchars($idea['desc_Idee_bas']) ?></td>
                 <td><?= htmlspecialchars($idea['PrenomU'] . " " . $idea['NomU']) ?></td>
                 <td>
                     <?php
                     $isProductOwner = false;
                     foreach ($projects as $project) {
-                        if ($project['IdP'] == $idea['IdEq'] && $project['IdR'] == getIdRole("Product Owner")) {
+                        if ($project['IdP'] == $idea['IdP'] && $project['IdR'] == getIdRole("Product Owner")) {
                             $isProductOwner = true;
                             break;
                         }
@@ -87,5 +98,6 @@ if (isset($bdd)){
 <?php else: ?>
     <p>Aucune idée disponible pour vos projets.</p>
 <?php endif; ?>
+<a href="../process/ajouter_idee.php"> Ajouter une idee</p>
 </body>
 </html>
