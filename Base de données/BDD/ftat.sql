@@ -229,7 +229,7 @@ BEFORE INSERT ON taches
 FOR EACH ROW
 BEGIN
     DECLARE task_count INT;
-    
+
     SELECT COUNT(*) INTO task_count
     FROM taches
     WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
@@ -277,7 +277,7 @@ BEFORE INSERT ON sprintbacklog
 FOR EACH ROW
 BEGIN
   DECLARE team_id_of_user SMALLINT;
-  
+
   -- Récupère le team ID de l'utilisateur assigné à la tache
   SELECT IdEq INTO team_id_of_user
   FROM utilisateurs
