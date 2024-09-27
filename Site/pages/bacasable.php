@@ -2,6 +2,8 @@
 include "../includes/connexionBDD.php";
 include "../includes/function.php";
 
+session_start();
+
 $userId = $_SESSION['user_id'];
 
 $req = "SELECT p.IdP, p.NomP, ru.IdR
@@ -21,11 +23,11 @@ if (isset($bdd)){
     }
     $projectIdsPlaceholder = implode(',', array_fill(0, count($projectIds), '?'));
 
-    $Idees = "SELECT i.*, e.NomEqPrj, u.NomU, u.PrenomU
+    $Idees = "SELECT i.*, p.NomP, u.NomU, u.PrenomU
                FROM idees_bac_a_sable i
-               JOIN equipesprj e ON i.IdEq = e.IdEq
+               JOIN projets p ON p.IdP = i.IdP
                JOIN utilisateurs u ON i.IdU = u.IdU
-               WHERE i.IdEq IN ($projectIdsPlaceholder)";
+               WHERE i.IdP IN ($projectIdsPlaceholder)";
     $stmtIdeas = $bdd->prepare($Idees);
     $stmtIdeas->execute($projectIds);
     $ideas = $stmtIdeas->fetchAll(PDO::FETCH_ASSOC);
@@ -50,31 +52,30 @@ if (isset($bdd)){
             <th>Nom de l'équipe</th>
             <th>Description de l'idée</th>
             <th>Auteur</th>
-            <th>Actions</th>
+
         </tr>
         </thead>
         <tbody>
         <?php foreach ($ideas as $idea): ?>
             <tr>
-                <td><?= htmlspecialchars($idea['NomEqPrj']) ?></td>
+                <td><?= htmlspecialchars($idea['NomP']) ?></td>
                 <td><?= htmlspecialchars($idea['desc_Idee_bas']) ?></td>
                 <td><?= htmlspecialchars($idea['PrenomU'] . " " . $idea['NomU']) ?></td>
                 <td>
                     <?php
                     $isProductOwner = false;
                     foreach ($projects as $project) {
-                        if ($project['IdP'] == $idea['IdEq'] && $project['IdR'] == getIdRole("Product Owner")) {
+                        if ($project['IdP'] == $idea['IdP'] && $project['IdR'] == getIdRole("Product Owner")) {
                             $isProductOwner = true;
                             break;
                         }
                     }
                     if ($isProductOwner): ?>
+                        <th>Actions</th>
                         <form method="post" action="../process/delete_idee.php">
                             <input type="hidden" name="idea_id" value="<?= $idea['Id_Idee_bas'] ?>">
                             <button type="submit" name="delete">Supprimer</button>
                         </form>
-                    <?php else: ?>
-                        Aucune action possible
                     <?php endif; ?>
                 </td>
             </tr>
