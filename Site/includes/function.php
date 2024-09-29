@@ -305,3 +305,94 @@ function getTeamsOfProject($id_projet){
         return null;
     }
 }
+
+function getSprintFromTask($id_task){
+    include 'connexionBDD.php';
+
+    try{
+        $sql = "SELECT * FROM sprints JOIN sprintbacklog ON sprints.IdS = sprintbacklog.IdS WHERE sprintbacklog.IdT = :id_tache";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam('id_tache',$id_task);
+        $stmt->execute();
+
+        $sprint = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($sprint){
+            return $sprint;
+        } else{
+            return null;
+        }
+    } catch (PDOException $e){
+        return null;
+    }
+}
+
+function getEveryState(){
+    include 'connexionBDD.php';
+
+    try{
+        $sql = "SELECT * FROM etatstaches";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute();
+
+        $etats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($etats){
+            return $etats;
+        } else{
+            return null;
+        }
+    } catch (PDOException $e){
+        return null;
+    }
+}
+
+function isTaskCompleted($id_task){
+    include 'connexionBDD.php';
+
+    try{
+        $sql = "SELECT * FROM sprintbacklog WHERE sprintbacklog.IdT = :id_task";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam(':id_tache',$id_task);
+        $stmt->execute();
+
+        $task = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($task['IdEtat'] === 5){
+            $is_completed = true;
+        } else{
+            return false;
+        }   
+    } catch (PDOException $e){
+        return false;
+    }
+}
+
+function calculVelocite($id_sprint){
+    include 'connexionBDD.php';
+
+    try{
+        $sql = "SELECT * FROM taches JOIN sprintbacklog ON taches.IdT = sprintbacklog.IdT WHERE sprintbacklog.IdS = :id_sprint AND sprintbacklog.IdEtat = 5";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam(':id_sprint',$id_sprint);
+        $stmt->execute();
+
+        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e){
+        return false;
+    }
+    $velocite = 0;
+    foreach ($tasks as $task){
+        $velocite += $task['CoutT'];
+    }
+
+    $sql = "UPDATE sprints SET VelociteEqPrj = :velocite WHERE IdS = :id_sprint";
+    $stmt = $bdd->prepare($sql);
+    $stmt->bindParam(':id_sprint',$id_sprint);
+    $stmt->bindParam(':velocite',$velocite);
+    $stmt->execute();
+
+    return;
+
+}

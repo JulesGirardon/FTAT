@@ -160,7 +160,7 @@
             <th>Priorité</th>
             <th>Utilisateur assigné</th>
             <th>Statut</th>
-            <th>Modifier Tâche</th>
+            <th>Sprint</th>
         </tr>
 
         <!-- Contenu du tableau taches -->
@@ -191,12 +191,31 @@
                             echo "<p>" . $state . "</p>";
                         } else {
                             echo "État non sélectionné";
-                        }  
-                        ?>
+                        }
+                        if (isset($user)):
+                            if ($_SESSION['user_id'] == $user['IdU']):?>
+                                <?php $all_states = getEveryState(); ?>
+                                <form action="../process/update_task_process.php" method="POST">
+                                    <label for="task_state">Mettre a jour le statut :</label>
+                                    <select name="task_state" id="task_state" required>
+                                        <option value="">-- Sélectionner un statut --</option>
+                                        <?php foreach($all_states as $state): ?>
+                                            <option value="<?php echo $state['IdEtat'] ?>"> <?php echo $state['Etat'] ?> </option>
+                                        <?php endforeach; ?>
+                                    </select>
+
+                                    <input type="hidden" name="id_projet" value="<?php echo $id_projet; ?>">
+                                    <input type="hidden" name="id_task" value="<?php echo $tache['IdT'] ?>">
+
+                                    <button type="submit">Mettre a jour la tâche</button>
+                                </form>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </td>
                     <td>
-                        <?php 
-                            
+                        <?php
+                            $sprint = getSprintFromTask($tache['IdT']);
+                            echo $sprint ? "Sprint #" . $sprint['IdS'] : "Pas de sprint"
                         ?>
                     </td>
                 </tr>
@@ -247,10 +266,10 @@
         <th>Sprint</th>
         <th>Date de début</th>
         <th>Date de fin</th>
-        <th>Vélocité</th>
         <th>Rétrospective</th>
         <th>Revue de sprint</th>
         <th>Equipe</th>
+        <th>Vélocité</th>
     </tr>
 
     <!-- Contenu du tableau sprints -->
@@ -295,26 +314,31 @@
             </td>
             <td><?php echo $sprint['DateDebS']; ?></td>
             <td><?php echo $sprint['DateFinS']; ?></td>
-            <td><?php echo $sprint['VelociteEqPrj']; ?></td>
             <td>
                 <?php 
-                    if ($isNotFinished) {
+                    if (!$sprint['RetrospectiveS']) {
                         echo "Veuillez entrer une rétrospective.";
                     } else {
                         echo $sprint['RetrospectiveS'] ? $sprint['RetrospectiveS'] : "Pas de rétrospective"; 
                     }
-            ?>
+                ?>
             </td>
             <td>
                 <?php 
-                    if ($isNotFinished) {
+                    if (!$sprint['RevueDeSprint']) {
                         echo "Veuillez entrer une revue de sprint.";
                     } else {
                         echo $sprint['RevueDeSprint'] ? $sprint['RevueDeSprint'] : "Pas de revue"; 
                     }
                 ?>
+
             </td>
             <td><?php echo getTeamByID($sprint['IdEq'])['NomEqPrj']; ?></td>
+
+            <?php calculVelocite($sprint['IdS'])?>
+            <td><?php echo $sprint['VelociteEqPrj']; ?></td>
+
+                
         </tr>
     <?php endforeach; ?>
 <?php else: ?>
