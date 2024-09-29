@@ -24,9 +24,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- --------------------------------------------------------
 
 CREATE TABLE equipesprj (
-  IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
-  NomEqPrj VARCHAR(100) NOT NULL,
-  PRIMARY KEY (IdEq)
+  IdP INT(11) NOT NULL,
+  IdEq SMALLINT(6) NOT NULL,
+  CONSTRAINT FK_Equipes_Projets_FOREIGN KEY (IdP) REFERENCES projets(IdP)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -39,9 +39,7 @@ CREATE TABLE projets (
   DescriptionP TEXT,
   DateDebutP DATE,
   DateFinP DATE,
-  IdEq SMALLINT(6) NOT NULL, -- L'équipe responsable du projet
-  PRIMARY KEY (IdP),
-  CONSTRAINT FK_Projets_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
+  PRIMARY KEY (IdP)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -132,11 +130,11 @@ CREATE TABLE taches (
   IdT INT(11) NOT NULL AUTO_INCREMENT,
   TitreT VARCHAR(50) NOT NULL,
   UserStoryT VARCHAR(300) NOT NULL,
-  IdP SMALLINT(6) NOT NULL,
+  IdP INT NOT NULL,
   CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
   IdPriorite TINYINT(1) NOT NULL,
   PRIMARY KEY (IdT),
-  CONSTRAINT FK_Taches_Projets FOREIGN KEY (IdP) REFERENCES projet(IdP),
+  CONSTRAINT FK_Taches_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
   CONSTRAINT FK_Taches_Priorite FOREIGN KEY (IdPriorite) REFERENCES prioritestaches(idPriorite)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -151,7 +149,7 @@ CREATE TABLE sprints (
   RetrospectiveS VARCHAR(300) DEFAULT NULL,
   RevueDeSprint VARCHAR(300) DEFAULT NULL,
   IdEq SMALLINT(6) NOT NULL,
-  VelociteEqPrj DECIMAL(10, 0) NOT NULL,
+  VelociteEqPrj INT DEFAULT 0,
   PRIMARY KEY (IdS),
   CONSTRAINT FK_Sprints_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -197,5 +195,105 @@ CREATE TABLE membre_equipe (
   CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
   CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
+-- --------------------------------------------------------
+
+
+DELIMITER $$
+
+CREATE TRIGGER check_unique_active_sprint
+BEFORE INSERT ON sprint
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM sprints 
+        WHERE IdEq = NEW.IdEq 
+        AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS) 
+            OR 
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+            OR 
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+        )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'update d'un'sprint lorsqu'un autre est dejà actif pour une team
+-- --------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER check_unique_active_sprint_update
+BEFORE UPDATE ON sprints
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM sprints 
+        WHERE IdEq = NEW.IdEq 
+        AND IdS != OLD.IdS 
+        AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS) 
+            OR 
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+            OR 
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+        )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END;
+$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur supprimé
+-- --------------------------------------------------------
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_delete_user_from_project
+BEFORE DELETE ON utilisateurs
+FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
+-- --------------------------------------------------------
+
+CREATE TRIGGER before_delete_role_from_project
+BEFORE DELETE ON rolesutilisateurprojet
+FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU 
+    AND IdT IN (
+        SELECT IdT 
+        FROM taches 
+        WHERE IdP = OLD.IdP
+    );
+END$$
+
+DELIMITER ;
 
 COMMIT;
