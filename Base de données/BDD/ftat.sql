@@ -205,7 +205,7 @@ CREATE TABLE membre_equipe (
 DELIMITER $$
 
 CREATE TRIGGER check_unique_active_sprint
-BEFORE INSERT ON sprint
+BEFORE INSERT ON sprints
 FOR EACH ROW
 BEGIN
     IF EXISTS (
