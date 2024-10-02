@@ -270,8 +270,15 @@ CREATE TRIGGER before_delete_user_from_project
     BEFORE DELETE ON utilisateurs
     FOR EACH ROW
 BEGIN
-    DELETE FROM sprintbacklog
-    WHERE IdU = OLD.IdU;
+    DECLARE task_count INT;
+
+    SELECT COUNT(*) INTO task_count
+    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
+
+    IF task_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
+    END IF;
 END$$
 
 DELIMITER ;
@@ -279,9 +286,16 @@ DELIMITER ;
 
 DELIMITER $$
 
--- --------------------------------------------------------
--- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
--- --------------------------------------------------------
+CREATE TRIGGER prevent_invalid_task_assignment
+BEFORE INSERT ON sprintbacklog
+FOR EACH ROW
+BEGIN
+  DECLARE team_id_of_user SMALLINT;
+
+  -- Récupère le team ID de l'utilisateur assigné à la tache
+  SELECT IdEq INTO team_id_of_user
+  FROM utilisateurs
+  WHERE IdU = NEW.IdU;
 
 CREATE TRIGGER before_delete_role_from_project
     BEFORE DELETE ON rolesutilisateurprojet
