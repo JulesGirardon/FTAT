@@ -21,43 +21,43 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Base de données : `agiletools`
 
 -- --------------------------------------------------------
--- Table des équipes de projet
--- --------------------------------------------------------
-
-CREATE TABLE equipesprj (
-  IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
-  NomEqPrj VARCHAR(100) NOT NULL,
-  PRIMARY KEY (IdEq)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
 -- Table des projets
 -- --------------------------------------------------------
 
 CREATE TABLE projets (
-  IdP INT(11) NOT NULL AUTO_INCREMENT,
-  NomP VARCHAR(100) NOT NULL,
-  DescriptionP TEXT,
-  DateDebutP DATE,
-  DateFinP DATE,
-  IdEq SMALLINT(6) NOT NULL, -- L'équipe responsable du projet
-  PRIMARY KEY (IdP),
-  CONSTRAINT FK_Projets_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
+                         IdP SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                         NomP VARCHAR(100) NOT NULL,
+                         DescriptionP TEXT,
+                         DateDebutP DATE,
+                         DateFinP DATE,
+                         PRIMARY KEY (IdP)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table des équipes de projet
+-- --------------------------------------------------------
+
+CREATE TABLE equipesprj (
+                            IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                            NomEqPrj VARCHAR(100),
+                            IdP SMALLINT(6) NOT NULL,
+                            PRIMARY KEY (IdEq),
+                            CONSTRAINT FK_Equipes_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 -- Table des utilisateurs
 -- --------------------------------------------------------
 
 CREATE TABLE utilisateurs (
-  IdU SMALLINT(6) NOT NULL AUTO_INCREMENT,
-  NomU VARCHAR(50) NOT NULL,
-  PrenomU VARCHAR(50) NOT NULL,
-  mail VARCHAR(50) NOT NULL,
-  MotDePasseU VARCHAR(255) NOT NULL,
-  SpecialiteU ENUM('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  Statut ENUM('Admin','User') NOT NULL DEFAULT 'User',
-  PRIMARY KEY (IdU)
+                              IdU SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                              NomU VARCHAR(50) NOT NULL,
+                              PrenomU VARCHAR(50) NOT NULL,
+                              mail VARCHAR(50) NOT NULL,
+                              MotDePasseU VARCHAR(255) NOT NULL,
+                              SpecialiteU ENUM('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
+                              Statut ENUM('Admin','User') NOT NULL DEFAULT 'User',
+                              PRIMARY KEY (IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -65,9 +65,9 @@ CREATE TABLE utilisateurs (
 -- --------------------------------------------------------
 
 CREATE TABLE roles (
-  IdR SMALLINT(6) NOT NULL AUTO_INCREMENT,
-  DescR VARCHAR(100) NOT NULL,
-  PRIMARY KEY (IdR)
+                       IdR SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                       DescR VARCHAR(100) NOT NULL,
+                       PRIMARY KEY (IdR)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -75,54 +75,54 @@ CREATE TABLE roles (
 -- --------------------------------------------------------
 
 CREATE TABLE etatstaches (
-  IdEtat SMALLINT(4) NOT NULL,
-  Etat VARCHAR(50) NOT NULL,
-  PRIMARY KEY (IdEtat)
+                             IdEtat SMALLINT(4) NOT NULL AUTO_INCREMENT,
+                             Etat VARCHAR(50) NOT NULL,
+                             PRIMARY KEY (IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Insertion des états de tâches
 INSERT INTO etatstaches (IdEtat, Etat) VALUES
-(1, 'A faire'),
-(2, 'En cours'),
-(3, 'Terminé et Test Unitaire réalisé'),
-(4, 'Test Fonctionnel Réalisé / Module intégré dans version'),
-(5, 'Intégré dans version de production');
+                                           (1, 'A faire'),
+                                           (2, 'En cours'),
+                                           (3, 'Terminé et Test Unitaire réalisé'),
+                                           (4, 'Test Fonctionnel Réalisé / Module intégré dans version'),
+                                           (5, 'Intégré dans version de production');
 
 -- --------------------------------------------------------
 -- Table des priorités de tâches
 -- --------------------------------------------------------
 
 CREATE TABLE prioritestaches (
-  idPriorite TINYINT(1) NOT NULL,
-  Priorite VARCHAR(15) NOT NULL,
-  valPriorite TINYINT(1) NOT NULL,
-  PRIMARY KEY (idPriorite)
+                                 idPriorite TINYINT(1) NOT NULL AUTO_INCREMENT,
+                                 Priorite VARCHAR(15) NOT NULL,
+                                 valPriorite TINYINT(1) NOT NULL,
+                                 PRIMARY KEY (idPriorite)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Insertion des priorités de tâches
 INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
-(1, '1', 1),
-(2, '2', 2),
-(3, '3', 3),
-(4, '4', 4),
-(5, '5', 5),
-(6, 'MUST (MoSCoW)', 5),
-(7, 'SHOULD (MoSCoW)', 4),
-(8, 'Could', 2),
-(9, 'WONT (MoSCoW)', 0);
+                                                                    (1, '1', 1),
+                                                                    (2, '2', 2),
+                                                                    (3, '3', 3),
+                                                                    (4, '4', 4),
+                                                                    (5, '5', 5),
+                                                                    (6, 'MUST (MoSCoW)', 5),
+                                                                    (7, 'SHOULD (MoSCoW)', 4),
+                                                                    (8, 'Could', 2),
+                                                                    (9, 'WONT (MoSCoW)', 0);
 
 -- --------------------------------------------------------
 -- Table des idées bac à sable
 -- --------------------------------------------------------
 
 CREATE TABLE idees_bac_a_sable (
-  Id_Idee_bas INT(11) NOT NULL AUTO_INCREMENT,
-  desc_Idee_bas VARCHAR(300) NOT NULL,
-  IdU SMALLINT(6) NOT NULL,
-  IdEq SMALLINT(6) NOT NULL,
-  PRIMARY KEY (Id_Idee_bas),
-  CONSTRAINT FK_IdeesBAS_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
-  CONSTRAINT FK_IdeesBAS_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
+                                   Id_Idee_bas SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                                   desc_Idee_bas VARCHAR(300) NOT NULL,
+                                   IdU SMALLINT(6) NOT NULL,
+                                   IdEq SMALLINT(6) NOT NULL,
+                                   PRIMARY KEY (Id_Idee_bas),
+                                   CONSTRAINT FK_IdeesBAS_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+                                   CONSTRAINT FK_IdeesBAS_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -130,15 +130,15 @@ CREATE TABLE idees_bac_a_sable (
 -- --------------------------------------------------------
 
 CREATE TABLE taches (
-  IdT INT(11) NOT NULL AUTO_INCREMENT,
-  TitreT VARCHAR(50) NOT NULL,
-  UserStoryT VARCHAR(300) NOT NULL,
-  IdEq SMALLINT(6) NOT NULL,
-  CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
-  IdPriorite TINYINT(1) NOT NULL,
-  PRIMARY KEY (IdT),
-  CONSTRAINT FK_Taches_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
-  CONSTRAINT FK_Taches_Priorite FOREIGN KEY (IdPriorite) REFERENCES prioritestaches(idPriorite)
+                        IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                        TitreT VARCHAR(50) NOT NULL,
+                        UserStoryT VARCHAR(300) NOT NULL,
+                        IdP SMALLINT(6) NOT NULL,
+                        CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+                        IdPriorite TINYINT(1) NOT NULL,
+                        PRIMARY KEY (IdT),
+                        CONSTRAINT FK_Taches_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
+                        CONSTRAINT FK_Taches_Priorite FOREIGN KEY (IdPriorite) REFERENCES prioritestaches(idPriorite)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -146,15 +146,15 @@ CREATE TABLE taches (
 -- --------------------------------------------------------
 
 CREATE TABLE sprints (
-  IdS SMALLINT(6) NOT NULL AUTO_INCREMENT,
-  DateDebS DATE NOT NULL,
-  DateFinS DATE NOT NULL,
-  RetrospectiveS VARCHAR(300) DEFAULT NULL,
-  RevueDeSprint VARCHAR(300) DEFAULT NULL,
-  IdEq SMALLINT(6) NOT NULL,
-  VelociteEqPrj DECIMAL(10, 0) NOT NULL,
-  PRIMARY KEY (IdS),
-  CONSTRAINT FK_Sprints_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
+                         IdS SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                         DateDebS DATE NOT NULL,
+                         DateFinS DATE NOT NULL,
+                         RetrospectiveS VARCHAR(300) DEFAULT NULL,
+                         RevueDeSprint VARCHAR(300) DEFAULT NULL,
+                         IdEq SMALLINT(6) NOT NULL,
+                         VelociteEqPrj INT DEFAULT 0,
+                         PRIMARY KEY (IdS),
+                         CONSTRAINT FK_Sprints_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -162,15 +162,15 @@ CREATE TABLE sprints (
 -- --------------------------------------------------------
 
 CREATE TABLE sprintbacklog (
-  IdT INT(11) NOT NULL,
-  IdS SMALLINT(6) NOT NULL,
-  IdU SMALLINT(6) NOT NULL,
-  IdEtat SMALLINT(6) NOT NULL,
-  PRIMARY KEY (IdT),
-  CONSTRAINT FK_SB_Taches FOREIGN KEY (IdT) REFERENCES taches(IdT),
-  CONSTRAINT FK_SB_Sprints FOREIGN KEY (IdS) REFERENCES sprints(IdS),
-  CONSTRAINT FK_SB_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
-  CONSTRAINT FK_SB_EtatTaches FOREIGN KEY (IdEtat) REFERENCES etatstaches(IdEtat)
+                               IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                               IdS SMALLINT(6) NOT NULL,
+                               IdU SMALLINT(6) NOT NULL,
+                               IdEtat SMALLINT(6) NOT NULL,
+                               PRIMARY KEY (IdT),
+                               CONSTRAINT FK_SB_Taches FOREIGN KEY (IdT) REFERENCES taches(IdT),
+                               CONSTRAINT FK_SB_Sprints FOREIGN KEY (IdS) REFERENCES sprints(IdS),
+                               CONSTRAINT FK_SB_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+                               CONSTRAINT FK_SB_EtatTaches FOREIGN KEY (IdEtat) REFERENCES etatstaches(IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -178,13 +178,13 @@ CREATE TABLE sprintbacklog (
 -- --------------------------------------------------------
 
 CREATE TABLE rolesutilisateurprojet (
-  IdU SMALLINT(6) NOT NULL,
-  IdP INT(11) NOT NULL, -- L'utilisateur a un rôle spécifique dans un projet
-  IdR SMALLINT(6) NOT NULL,
-  PRIMARY KEY (IdU, IdP, IdR),
-  CONSTRAINT FK_RoleUtil_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
-  CONSTRAINT FK_RoleUtil_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
-  CONSTRAINT FK_RoleUtil_Roles FOREIGN KEY (IdR) REFERENCES roles(IdR)
+                                        IdU SMALLINT(6) NOT NULL,
+                                        IdP SMALLINT(6) NOT NULL, -- L'utilisateur a un rôle spécifique dans un projet
+                                        IdR SMALLINT(6) NOT NULL,
+                                        PRIMARY KEY (IdU, IdP, IdR),
+                                        CONSTRAINT FK_RoleUtil_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
+                                        CONSTRAINT FK_RoleUtil_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+                                        CONSTRAINT FK_RoleUtil_Roles FOREIGN KEY (IdR) REFERENCES roles(IdR)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -193,14 +193,15 @@ CREATE TABLE rolesutilisateurprojet (
 -- --------------------------------------------------------
 
 CREATE TABLE CoutMembreTaches (
-      IdU SMALLINT(6) NOT NULL,
-      IdT INT(11) NOT NULL,
-      Commentaire VARCHAR(255),
-      CoutMT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
-      PRIMARY KEY (IdU, IdT),
-      CONSTRAINT FK_Id_Tache FOREIGN KEY (IdT) REFERENCES taches(IdT),
-      CONSTRAINT FK_Id_Utilisateur FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    IdU SMALLINT(6) NOT NULL,
+    IdT SMALLINT(6) NOT NULL,
+    Commentaire VARCHAR(255),
+    CoutMT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
+    PRIMARY KEY (IdU, IdT),
+    CONSTRAINT FK_CoutMembreTaches_Taches FOREIGN KEY (IdT) REFERENCES taches(IdT),
+    CONSTRAINT FK_CoutMembreTaches_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 
 -- --------------------------------------------------------
@@ -208,11 +209,132 @@ CREATE TABLE CoutMembreTaches (
 -- --------------------------------------------------------
 
 CREATE TABLE membre_equipe (
-  IdEq SMALLINT(6) NOT NULL,
-  IdU SMALLINT(6) NOT NULL,
-    PRIMARY KEY (IdEq, IdU),
-    CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
-    CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                               IdEq SMALLINT(6) NOT NULL,
+                               IdU SMALLINT(6) NOT NULL,
+                               PRIMARY KEY (IdEq, IdU),
+                               CONSTRAINT FK_MembreEquipe_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq),
+                               CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
+-- --------------------------------------------------------
+
+
+DELIMITER $$
+
+CREATE TRIGGER check_unique_active_sprint
+    BEFORE INSERT ON sprints
+    FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM sprints
+        WHERE IdEq = NEW.IdEq
+          AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
+                OR
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+                OR
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+            )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'update d'un'sprint lorsqu'un autre est dejà actif pour une team
+-- --------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER check_unique_active_sprint_update
+    BEFORE UPDATE ON sprints
+    FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM sprints
+        WHERE IdEq = NEW.IdEq
+          AND IdS != OLD.IdS
+          AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
+                OR
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+                OR
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+            )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END;
+$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur supprimé
+-- --------------------------------------------------------
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_delete_user_from_project
+    BEFORE DELETE ON utilisateurs
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
+-- --------------------------------------------------------
+
+CREATE TRIGGER before_delete_role_from_project
+    BEFORE DELETE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU
+      AND IdT IN (
+        SELECT IdT
+        FROM taches
+        WHERE IdP = OLD.IdP
+    );
+END$$
+
+DELIMITER $$
+
+CREATE FUNCTION getIdRole(role VARCHAR(50))
+    RETURNS INT
+    DETERMINISTIC
+BEGIN
+    DECLARE roleId INT;
+
+    IF role IN ('Scrum Master', 'Product Owner', 'Member') THEN
+        SELECT IdR
+        INTO roleId
+        FROM ftat.roles
+        WHERE DescR = role;
+
+        RETURN roleId;
+    ELSE
+        RETURN -1;
+    END IF;
+END $$
+
+DELIMITER ;
+
+DELIMITER ;
 
 COMMIT;

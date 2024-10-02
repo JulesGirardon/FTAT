@@ -10,7 +10,7 @@ INSERT INTO `roles` (`IdR`, `DescR`) VALUES
 
 -- Inserts pour la table `taches`
 -- Inserts pour la table `taches`
-INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `CoutT`, `IdPriorite`) VALUES
+INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdP`, `CoutT`, `IdPriorite`) VALUES
 (1, 'Tache 1', 'En tant que developpeur, je veux creer une interface', 1, '5', 1),
 (2, 'Tache 2', 'En tant qu utilisateur, je veux une meilleure navigation', 1, '3', 2),
 (3, 'Tache 3', 'Manger le panier de basket', 1, '1', 1),

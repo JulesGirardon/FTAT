@@ -1,13 +1,13 @@
 DROP PROCEDURE IF EXISTS getAllTasks;
 DROP FUNCTION IF EXISTS insertCoutMembreTache;
 DROP PROCEDURE IF EXISTS getAllVotes;
-
+DROP PROCEDURE IF EXISTS displayAllDifficulties;
 DELIMITER $$
 
 CREATE PROCEDURE getAllTasks(IN ID INT)
 BEGIN
     SELECT * FROM taches
-    WHERE taches.IdEq = ID;
+    WHERE taches.IdP = ID;
 END$$
 
 
@@ -33,7 +33,7 @@ BEGIN
     SELECT *
     FROM coutmembretaches
     JOIN taches ON coutmembretaches.idT = taches.idT
-    WHERE taches.IdEq = ID;
+    WHERE taches.IdP = ID;
 END$$
 
 DELIMITER ;
