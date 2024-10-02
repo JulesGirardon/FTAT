@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil - LOMAN's</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <header></header>
-
     <main>
         <?php
         $_SESSION["currPrj"] = 1;
@@ -21,7 +18,6 @@
         foreach ($results as $row) {
             $taskTitles[$row['IdT']] = $row['TitreT'];
         }
-
         if ($results && count($results) > 0): ?>
             <div class="table-container">
                 <table border="1">
@@ -44,13 +40,11 @@
                                     </td>
                                 </tr>
                             <?php endif; ?>
-
                             <tr>
                                 <td><?= $row['IdU'] ?></td>
                                 <td>cout tâche <?= $row['CoutMT'] ?></td>
                                 <td><?= $row['Commentaire'] ?></td>
                             </tr>
-
                             <?php $currentTask = $row['IdT']; ?>
                         <?php endforeach; ?>
                     </tbody>
@@ -58,11 +52,8 @@
             </div>
         <?php else: echo "<p class='no-results'>Aucune tâche trouvée.</p>";
         endif; ?>
-
         <a href="./planning_poker.php" class="btn">Planning formulaire</a>
     </main>
-
     <script src="../scripts/scripts.js"></script>
 </body>
-
 </html>
