@@ -45,23 +45,15 @@ BEGIN
   DECLARE enum_values TEXT;
   DECLARE start_pos INT;
   DECLARE end_pos INT;
-  DECLARE current_value VARCHAR(10);
-  
-  -- Créer une table temporaire pour stocker les valeurs
+  DECLARE current_value VARCHAR(10); 
   CREATE TEMPORARY TABLE temp_enum_values (
     value VARCHAR(10)
   );
-  
-  -- Extrait les informations du champ CoutT
   SELECT COLUMN_TYPE INTO enum_values
   FROM INFORMATION_SCHEMA.COLUMNS
   WHERE TABLE_NAME = 'taches'
   AND COLUMN_NAME = 'CoutT';
-  
-  -- Extrait la partie entre 'enum(' et ')' pour obtenir uniquement les valeurs de l'énumération
   SET enum_values = SUBSTRING(enum_values, 6, CHAR_LENGTH(enum_values) - 6);
-  
-  -- Boucle pour parcourir les valeurs de l'énumération et les insérer dans la table temporaire
   SET start_pos = 1;
   WHILE start_pos > 0 DO
     SET end_pos = LOCATE(',', enum_values, start_pos);
@@ -71,20 +63,11 @@ BEGIN
     ELSE
       SET current_value = TRIM(BOTH '\'' FROM SUBSTRING(enum_values, start_pos, end_pos - start_pos));
       SET start_pos = end_pos + 1;
-    END IF;
-    
-    -- Insère chaque valeur dans la table temporaire
+    END IF;    
     INSERT INTO temp_enum_values (value) VALUES (current_value);
   END WHILE;
-  
-  -- Sélectionne toutes les valeurs dans un tableau
-  SELECT * FROM temp_enum_values;
-  
-  -- Supprime la table temporaire
+
+  SELECT * FROM temp_enum_values;  
   DROP TEMPORARY TABLE IF EXISTS temp_enum_values;
 END$$
-
-
-
 DELIMITER ;
-
