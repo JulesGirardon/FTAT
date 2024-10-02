@@ -5,7 +5,7 @@ function adjustTextAreaSize(textarea) {
 function ajustRemainChar(textArea) {
     const maxChars = 255;
     const charCountElement = document.getElementById('char-count');
-    
+
     function updateCharCount() {
         const currentLength = textArea.value.length;
         const remainingChars = maxChars - currentLength;
@@ -13,7 +13,7 @@ function ajustRemainChar(textArea) {
     }
     updateCharCount();
     textArea.addEventListener('input', updateCharCount);
-    window.addEventListener('message', function(e) {
+    window.addEventListener('message', function (e) {
         if (e.data.type === 'textareaUpdate') {
             updateCharCount();
         }
@@ -21,6 +21,7 @@ function ajustRemainChar(textArea) {
 }
 function setDifficulty(button) {
     const difficultyValue = button.getAttribute('data-difficulty');
-    difficulty = difficultyValue;
-    document.getElementById('difficulty-display').textContent = difficulty;
+    document.getElementById('difficulty').value = difficultyValue;
+    document.getElementById('difficulty-display').textContent = difficultyValue;
 }
+
