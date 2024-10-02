@@ -20,27 +20,30 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Base de données : `agiletools`
 
 -- --------------------------------------------------------
--- Table des équipes de projet
--- --------------------------------------------------------
-
-CREATE TABLE equipesprj (
-  IdP INT(11) NOT NULL,
-  IdEq SMALLINT(6) NOT NULL,
-  CONSTRAINT FK_Equipes_Projets_FOREIGN KEY (IdP) REFERENCES projets(IdP)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
 -- Table des projets
 -- --------------------------------------------------------
 
 CREATE TABLE projets (
-  IdP INT(11) NOT NULL AUTO_INCREMENT,
+  IdP SMALLINT(6) NOT NULL AUTO_INCREMENT,
   NomP VARCHAR(100) NOT NULL,
   DescriptionP TEXT,
   DateDebutP DATE,
   DateFinP DATE,
   PRIMARY KEY (IdP)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table des équipes de projet
+-- --------------------------------------------------------
+
+CREATE TABLE equipesprj (
+  IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  NomEqPrj VARCHAR(55),
+  IdP SMALLINT(6) NOT NULL,
+  PRIMARY KEY(IdEq),
+  CONSTRAINT FK_Equipes_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 -- Table des utilisateurs
@@ -103,17 +106,17 @@ INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
 (3, '3', 3),
 (4, '4', 4),
 (5, '5', 5),
-(6, 'MUST (MoSCoW)', 5),
-(7, 'SHOULD (MoSCoW)', 4),
+(6, 'MUST', 5),
+(7, 'SHOULD', 4),
 (8, 'Could', 2),
-(9, 'WONT (MoSCoW)', 0);
+(9, 'WONT', 0);
 
 -- --------------------------------------------------------
 -- Table des idées bac à sable
 -- --------------------------------------------------------
 
 CREATE TABLE idees_bac_a_sable (
-  Id_Idee_bas INT(11) NOT NULL AUTO_INCREMENT,
+  Id_Idee_bas SMALLINT(6) NOT NULL AUTO_INCREMENT,
   desc_Idee_bas VARCHAR(300) NOT NULL,
   IdU SMALLINT(6) NOT NULL,
   IdEq SMALLINT(6) NOT NULL,
@@ -127,7 +130,7 @@ CREATE TABLE idees_bac_a_sable (
 -- --------------------------------------------------------
 
 CREATE TABLE taches (
-  IdT INT(11) NOT NULL AUTO_INCREMENT,
+  IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
   TitreT VARCHAR(50) NOT NULL,
   UserStoryT VARCHAR(300) NOT NULL,
   IdP INT NOT NULL,
@@ -159,7 +162,7 @@ CREATE TABLE sprints (
 -- --------------------------------------------------------
 
 CREATE TABLE sprintbacklog (
-  IdT INT(11) NOT NULL,
+  IdT SMALLINT(6) NOT NULL,
   IdS SMALLINT(6) NOT NULL,
   IdU SMALLINT(6) NOT NULL,
   IdEtat SMALLINT(6) NOT NULL,
@@ -176,7 +179,7 @@ CREATE TABLE sprintbacklog (
 
 CREATE TABLE rolesutilisateurprojet (
   IdU SMALLINT(6) NOT NULL,
-  IdP INT(11) NOT NULL, -- L'utilisateur a un rôle spécifique dans un projet
+  IdP SMALLINT(6) NOT NULL, -- L'utilisateur a un rôle spécifique dans un projet
   IdR SMALLINT(6) NOT NULL,
   PRIMARY KEY (IdU, IdP, IdR),
   CONSTRAINT FK_RoleUtil_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),

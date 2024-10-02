@@ -20,17 +20,17 @@ function getIdRole($role) {
     return null;
 }
 
-function getEquipesFromUser($id_user){
+function getEquipeFromUser($id_user){
     include 'connexionBDD.php';
     try {
-        $sql = "SELECT membre_equipe.IdEq FROM membre_equipe WHERE membre_equipe.IdU = :id_user";
+        $sql = "SELECT equipesprj.* FROM equipesprj JOIN membre_equipe ON equipesprj.IdEq = membre_equipe.IdEq WHERE membre_equipe.IdU = :id_user"; 
         $stmt = $bdd->prepare($sql);
         $stmt->bindParam(':id_user', $id_user);
         $stmt->execute();
-        $id = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $equipe = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($id && isset($id['IdEq'])) {
-            return $id['IdEq']; 
+        if ($equipe) {
+            return $equipe; 
         } else {
             return null;  
         }
@@ -223,7 +223,7 @@ function getSprintsFromProject($id_projet) {
         return null;
 }
 }
-function getActivesSprintOfTeam($id_team) {
+function getActiveSprintOfTeam($id_team) {
     include "../includes/connexionBDD.php"; 
     try{
     $sql = "SELECT sprints.* FROM sprints WHERE :current_date BETWEEN sprints.DateDebS AND sprints.DateFinS AND sprints.IdEq = :id_team";
@@ -235,7 +235,7 @@ function getActivesSprintOfTeam($id_team) {
     
     $stmt->execute();
     
-    $sprint = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sprint = $stmt->fetch(PDO::FETCH_ASSOC);
     
     return $sprint ? $sprint : null;
 

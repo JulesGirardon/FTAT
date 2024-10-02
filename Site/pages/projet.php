@@ -29,9 +29,9 @@
     //equipes du projet
     $equipes = getTeamsOfProject($id_projet);
     //sprint actif du projet
-    $sprints_actifs = [];  //Tableau de tableau de tableau
+    $sprints_actifs = [];  //Tableau de tableau
     foreach ($equipes as $equipe){
-        array_push($sprints_actifs,getActivesSprintOfTeam($equipe['IdEq']));
+        array_push($sprints_actifs,getActiveSprintOfTeam($equipe['IdEq']));
     }
 ?>
 
@@ -97,8 +97,9 @@
                                                     <option value="<?php echo $task['IdT']; ?>"><?php echo $task['TitreT']; ?></option>
                                                     <?php endforeach; ?>
                                             </select>
-                                            <input type="hidden" name="id_sprint" value="<?php echo getActivesSprintOfTeam(getEquipesFromUser($membre['IdU']))['IdS']; ?>">
+                                            <input type="hidden" name="id_sprint" value="<?php echo getActiveSprintOfTeam(getEquipeFromUser($membre['IdU'])['IdEq'])['IdS']; ?>">
                                             <input type="hidden" name="id_user" value="<?php echo $membre['IdU']; ?>">
+                                            <input type="hidden" name="id_projet" value="<?php echo $id_projet; ?>">
                                             <button type="submit">Assigner la tâche à l'utilisateur</button>
                                         </form>
                                     <?php endif; endif;
@@ -279,17 +280,15 @@
             $isActive = false;
             $isNotFinished = false;
             if (isset($sprints_actifs) && $sprints_actifs) {
-                foreach ($sprints_actifs as $sprint_array) {
-                    if (is_array($sprint_array) && isset($sprint_array[0])) {
-                        $sprint_actif = $sprint_array[0]; 
-                        
-                        if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS']) {
-                            $isActive = true;
-                            break; 
-                        }
+                foreach ($sprints_actifs as $sprint_actif) {
+                    if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS']) {
+                        $isActive = true;
+                        break; 
                     }
+                        
+                        
                 }
-            } 
+            }
             $date_actuelle = new DateTime();
             $date_fin_sprint = new DateTime($sprint['DateFinS']);
             if ((!$sprint['RetrospectiveS'] || !$sprint['RevueDeSprint']) && $date_actuelle > $date_fin_sprint){

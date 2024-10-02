@@ -21,7 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     } catch (Exception $e) {
         echo $e->getMessage();
-        header("location : ../pages/projet.php?id=" . $id_projet . "?error=error");
-        exit();
+        echo $id_task;
+        echo $id_sprint;
+        echo $id_user;
+        
     }
 }
