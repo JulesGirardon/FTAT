@@ -14,21 +14,10 @@ DROP TABLE IF EXISTS prioritestaches;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS equipesprj;
-DROP TABLE IF EXISTS projets;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Base de données : `agiletools`
-
--- --------------------------------------------------------
--- Table des équipes de projet
--- --------------------------------------------------------
-
-CREATE TABLE equipesprj (
-                            IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
-                            NomEqPrj VARCHAR(100) NOT NULL,
-                            PRIMARY KEY (IdEq)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 -- Table des projets
@@ -40,10 +29,20 @@ CREATE TABLE projets (
                          DescriptionP TEXT,
                          DateDebutP DATE,
                          DateFinP DATE,
-                         IdEq SMALLINT(6) NOT NULL, -- L'équipe responsable du projet
-                         PRIMARY KEY (IdP),
-                         CONSTRAINT FK_Projets_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
+                         PRIMARY KEY (IdP)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table des équipes de projet
+-- --------------------------------------------------------
+
+CREATE TABLE equipesprj (
+                            IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                            NomEqPrj VARCHAR(100),
+                            IdP SMALLINT(6) NOT NULL,
+                            PRIMARY KEY (IdEq),
+                            CONSTRAINT FK_Equipes_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 -- Table des utilisateurs
@@ -75,7 +74,7 @@ CREATE TABLE roles (
 -- --------------------------------------------------------
 
 CREATE TABLE etatstaches (
-                             IdEtat SMALLINT(4) NOT NULL,
+                             IdEtat SMALLINT(4) NOT NULL AUTO_INCREMENT,
                              Etat VARCHAR(50) NOT NULL,
                              PRIMARY KEY (IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -93,7 +92,7 @@ INSERT INTO etatstaches (IdEtat, Etat) VALUES
 -- --------------------------------------------------------
 
 CREATE TABLE prioritestaches (
-                                 idPriorite TINYINT(1) NOT NULL,
+                                 idPriorite TINYINT(1) NOT NULL AUTO_INCREMENT,
                                  Priorite VARCHAR(15) NOT NULL,
                                  valPriorite TINYINT(1) NOT NULL,
                                  PRIMARY KEY (idPriorite)
@@ -116,13 +115,13 @@ INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
 -- --------------------------------------------------------
 
 CREATE TABLE idees_bac_a_sable (
-                                   Id_Idee_bas INT(11) NOT NULL AUTO_INCREMENT,
+                                   Id_Idee_bas SMALLINT(6) NOT NULL AUTO_INCREMENT,
                                    desc_Idee_bas VARCHAR(300) NOT NULL,
                                    IdU SMALLINT(6) NOT NULL,
-                                   IdP SMALLINT(6) NOT NULL,
+                                   IdEq SMALLINT(6) NOT NULL,
                                    PRIMARY KEY (Id_Idee_bas),
                                    CONSTRAINT FK_IdeesBAS_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
-                                   CONSTRAINT FK_IdeesBAS_Equipes FOREIGN KEY (IdP) REFERENCES projets(IdP)
+                                   CONSTRAINT FK_IdeesBAS_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -130,7 +129,7 @@ CREATE TABLE idees_bac_a_sable (
 -- --------------------------------------------------------
 
 CREATE TABLE taches (
-                        IdT INT(11) NOT NULL AUTO_INCREMENT,
+                        IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
                         TitreT VARCHAR(50) NOT NULL,
                         UserStoryT VARCHAR(300) NOT NULL,
                         IdP SMALLINT(6) NOT NULL,
@@ -151,10 +150,10 @@ CREATE TABLE sprints (
                          DateFinS DATE NOT NULL,
                          RetrospectiveS VARCHAR(300) DEFAULT NULL,
                          RevueDeSprint VARCHAR(300) DEFAULT NULL,
-                         IdP SMALLINT(6) NOT NULL,
-                         VelociteEqPrj DECIMAL(10, 0) NOT NULL,
+                         IdEq SMALLINT(6) NOT NULL,
+                         VelociteEqPrj INT DEFAULT 0,
                          PRIMARY KEY (IdS),
-                         CONSTRAINT FK_Sprints_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
+                         CONSTRAINT FK_Sprints_Equipes FOREIGN KEY (IdEq) REFERENCES equipesprj(IdEq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -162,7 +161,7 @@ CREATE TABLE sprints (
 -- --------------------------------------------------------
 
 CREATE TABLE sprintbacklog (
-                               IdT INT(11) NOT NULL,
+                               IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
                                IdS SMALLINT(6) NOT NULL,
                                IdU SMALLINT(6) NOT NULL,
                                IdEtat SMALLINT(6) NOT NULL,
@@ -199,96 +198,103 @@ CREATE TABLE membre_equipe (
                                CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
+-- --------------------------------------------------------
+
+
 DELIMITER $$
 
-CREATE FUNCTION getIdRole(role VARCHAR(50))
-    RETURNS INT
-    DETERMINISTIC
+CREATE TRIGGER check_unique_active_sprint
+    BEFORE INSERT ON sprints
+    FOR EACH ROW
 BEGIN
-    DECLARE roleId INT;
-
-    IF role IN ('Scrum Master', 'Product Owner', 'Member') THEN
-        SELECT IdR
-        INTO roleId
-        FROM ftat.roles
-        WHERE DescR = role;
-
-        RETURN roleId;
-    ELSE
-        RETURN -1;
+    IF EXISTS (
+        SELECT 1
+        FROM sprints
+        WHERE IdEq = NEW.IdEq
+          AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
+                OR
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+                OR
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+            )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
     END IF;
-END $$
+END$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+-- Trigger qui prévent l'update d'un'sprint lorsqu'un autre est dejà actif pour une team
+-- --------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER check_unique_active_sprint_update
+    BEFORE UPDATE ON sprints
+    FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM sprints
+        WHERE IdEq = NEW.IdEq
+          AND IdS != OLD.IdS
+          AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
+                OR
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+                OR
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+            )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END;
+$$
 
 DELIMITER ;
 
--- Ce trigger s'assure qu'une équipe ne peut pas avoir deux taches avec le meme titre dans un projet.
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur supprimé
+-- --------------------------------------------------------
+
+
 DELIMITER $$
 
-CREATE TRIGGER verify_unique_task_per_team
-BEFORE INSERT ON taches
-FOR EACH ROW
+CREATE TRIGGER before_delete_user_from_project
+    BEFORE DELETE ON utilisateurs
+    FOR EACH ROW
 BEGIN
-    DECLARE task_count INT;
-    
-    SELECT COUNT(*) INTO task_count
-    FROM taches
-    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
-
-    IF task_count > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
-    END IF;
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU;
 END$$
 
 DELIMITER ;
 
--- Ces triggers s'assure que la vélocité d'une équipe ne peut pas etre négative.
-  DELIMITER $$
 
-CREATE TRIGGER check_team_velocity
-BEFORE INSERT ON sprints
-FOR EACH ROW
-BEGIN
-  -- Vérifier que la vélocité de l'équipe est positive
-  IF NEW.VelociteEqPrj < 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
-  END IF;
-END; $$
-
-CREATE TRIGGER check_team_velocity_update
-BEFORE UPDATE ON sprints
-FOR EACH ROW
-BEGIN
-  -- Vérifier que la vélocité de l'équipe est positive
-  IF NEW.VelociteEqPrj < 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
-  END IF;
-END; $$
-
-DELIMITER ;
-
--- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
 DELIMITER $$
 
-CREATE TRIGGER prevent_invalid_task_assignment
-BEFORE INSERT ON sprintbacklog
-FOR EACH ROW
-BEGIN
-  DECLARE team_id_of_user SMALLINT;
-  
-  -- Récupère le team ID de l'utilisateur assigné à la tache
-  SELECT IdEq INTO team_id_of_user
-  FROM utilisateurs
-  WHERE IdU = NEW.IdU;
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
+-- --------------------------------------------------------
 
-  -- Si la team de l'utilisateur ne correspond pas à la team assignée à la tache, empêche l'assignation
-  IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la même équipe que la tâche.";
-  END IF;
-END; $$
+CREATE TRIGGER before_delete_role_from_project
+    BEFORE DELETE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU
+      AND IdT IN (
+        SELECT IdT
+        FROM taches
+        WHERE IdP = OLD.IdP
+    );
+END$$
 
 DELIMITER ;
 
