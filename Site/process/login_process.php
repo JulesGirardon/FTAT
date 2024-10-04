@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> main
 <?php
 session_start();
 
@@ -36,4 +39,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
->>>>>>> Stashed changes
+

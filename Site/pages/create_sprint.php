@@ -59,27 +59,5 @@ if (empty(getProjectWhereScrumMaster($_SESSION['user_id']))) {
                 </div>
             </form>
         </main>
-
-        <script>
-            var now = new Date();
-            var year = now.getFullYear();
-            var month = ('0' + (now.getMonth() + 1)).slice(-2);
-            var day = ('0' + now.getDate()).slice(-2);
-            var datetime_deb = year + '-' + month + '-' + day;
-
-            var dateDebInput = document.getElementById("date_deb");
-            var dateFinInput = document.getElementById("date_fin");
-
-            dateDebInput.value = datetime_deb;
-            dateDebInput.min = datetime_deb;
-
-            dateFinInput.value = datetime_deb;
-            dateFinInput.min = datetime_deb;
-
-            dateDebInput.addEventListener('input', function() {
-                dateFinInput.value = this.value;
-                dateFinInput.min = this.value;
-            });
-        </script>
     </body>
 </html>

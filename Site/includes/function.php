@@ -5,6 +5,7 @@
  */
 function getIdRole($role) {
     include "connexionBDD.php";
+
     $tab_role = ['Scrum Master', 'Product Owner', 'Member'];
 
     try {
@@ -26,7 +27,6 @@ function getIdRole($role) {
 
 function getProjectWhereScrumMaster($IdU) {
     include "connexionBDD.php";
-
     try {
         if (isset($IdU) && isset($bdd)){
             $sql = "SELECT p.IdP, p.NomP
@@ -45,26 +45,44 @@ function getProjectWhereScrumMaster($IdU) {
 
     return null;
 }
+function getIdTeamFromProject($IdP) {
+    include "../includes/connexionBDD.php";
+
+    try {
+        if (isset($IdP) && isset($bdd)){
+            $sql = "SELECT e.IdEq
+                FROM ftat.equipesprj AS e
+                JOIN ftat.projets AS p ON p.IdEq = e.IdEq
+                WHERE p.IdP = :IdP";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdP', $IdP);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC)['IdEq'];
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return null;
+}
 
 function getEquipeFromUser($id_user){
     include 'connexionBDD.php';
-
-    if(isset($bdd, $id_user)){
-        try {
-            $sql = "SELECT equipesprj.* FROM ftat.equipesprj JOIN ftat.membre_equipe ON equipesprj.IdEq = membre_equipe.IdEq WHERE membre_equipe.IdU = :id_user";
+    try {
+        if (isset($bdd)) {
+            $sql = "SELECT ftat.membre_equipe.IdEq FROM ftat.membre_equipe WHERE ftat.membre_equipe.IdU = :id_user";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_user', $id_user);
             $stmt->execute();
-            $equipe = $stmt->fetch(PDO::FETCH_ASSOC);
+            $id = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($equipe) {
-                return $equipe;
+            if ($id && isset($id['IdEq'])) {
+                return $id['IdEq'];
             } else {
                 return null;
             }
-        } catch (PDOException $e) {
-            return  null;
         }
+    } catch (PDOException $e) {
+        return  null;
     }
 }
 

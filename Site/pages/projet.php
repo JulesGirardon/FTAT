@@ -1,5 +1,4 @@
 <?php
-
 include "./includes/connexionBDD.php";
 if (isset($_GET['id'])) {
     $id_projet = (int)$_GET['id'];

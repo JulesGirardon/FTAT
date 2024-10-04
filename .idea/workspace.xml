@@ -4,35 +4,44 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b92cfa93-80e4-4117-a3e3-73f06a99becf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Site/includes/aside.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/add_membre.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/add_membre_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/add_sprint_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/add_user_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/assign_task_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/update_task_process.php" afterDir="false" />
+    <list default="true" id="1a46b2f3-030e-41b9-bfa4-5ec6ae548776" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/FTAT.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Base de données/BDD/function.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logo/icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/includes/connexionBDD.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/pages/ajouter_idee.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/pages/bacasable.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/pages/bordgene.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/pages/bordindiv.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/pages/logout.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/add_retrospective_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/add_revue_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/ajouter_idee_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/create_sprint_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/create_sprintbacklog_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/create_task_process.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/delete_idee.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Site/process/signin_process.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436/storage_v2/_src_/schema/ftat.gR0wAA.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436/storage_v2/_src_/schema/ftat.gR0wAA.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436/storage_v2/_src_/schema/ftat.gR0wAA.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Base de données/Assets/agiletools.sql.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Base de données/Assets/agiletools.sql.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Site/includes/aside.php" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/includes/function.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/includes/function.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/includes/header.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/includes/header.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/add_retrospective.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/add_retrospective.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/add_revue.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/add_revue.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/create_project.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/create_project.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/pages/create_sprint.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/create_sprint.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/create_sprintbacklog.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/create_sprintbacklog.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/create_task.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/create_task.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/pages/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/login.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/pages/projet.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/projet.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/signin.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/signin.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/process/create_project_process.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/process/create_project_process.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Site/process/login_process.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/process/login_process.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/styles/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Site/styles/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,41 +52,40 @@
     <execution />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Jules" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\Program Files\php-8.3.10\php.exe" />
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="2mc3EOKFHSGSPYw5oexaI4DI4Fe" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2mxldPylzqAKP61QdmCME50IqR7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JavaScript Debug.projet.php.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "CetteFoisCiCestLaBonne",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mariadb"
+    ]
   }
-}</component>
-  <component name="RunManager">
-    <configuration name="projet.php" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/FTAT/Site/pages/projet.php" useBuiltInWebServerPort="true">
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="JavaScript Debug.projet.php" />
-      </list>
-    </recent_temporary>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -89,28 +97,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="b92cfa93-80e4-4117-a3e3-73f06a99becf" name="Changes" comment="" />
-      <created>1727361927168</created>
+      <changelist id="1a46b2f3-030e-41b9-bfa4-5ec6ae548776" name="Changes" comment="" />
+      <created>1728026196101</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1727361927168</updated>
-      <workItem from="1727361928288" duration="1373000" />
-      <workItem from="1727438323926" duration="7290000" />
-      <workItem from="1727445844683" duration="2192000" />
-      <workItem from="1727535936976" duration="7996000" />
-      <workItem from="1727554817612" duration="43000" />
-      <workItem from="1727557064058" duration="39000" />
-      <workItem from="1727624809355" duration="78000" />
-      <workItem from="1727624954514" duration="173000" />
-      <workItem from="1727707747727" duration="2271000" />
-      <workItem from="1727731850520" duration="238000" />
-      <workItem from="1727789062484" duration="3781000" />
-      <workItem from="1727798549948" duration="4000" />
-      <workItem from="1727798613061" duration="4733000" />
-      <workItem from="1727858695821" duration="5458000" />
-      <workItem from="1727868074281" duration="9344000" />
-      <workItem from="1727877914216" duration="3203000" />
-      <workItem from="1727887569709" duration="3420000" />
+      <updated>1728026196101</updated>
+      <workItem from="1728026197537" duration="869000" />
     </task>
     <servers />
   </component>
