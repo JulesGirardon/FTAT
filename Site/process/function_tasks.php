@@ -80,3 +80,18 @@ function insertCoutScrum($idT, $cout)
         exit;
     }
 }
+
+function displayAllComments($task_id)
+{
+    global $bdd;
+    try {
+        $stmt = $bdd->prepare("CALL getAllComments(:task_id)");
+        $stmt->bindParam(':task_id', $task_id);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    } catch (PDOException $e) {
+        echo "Erreur de base de données : " . $e->getMessage();
+        exit;
+    }
+}

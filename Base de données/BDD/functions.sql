@@ -42,10 +42,7 @@ BEGIN
     RETURN affectedRows;
 END $$
 
-
-
 DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS getAllVotes;
 DELIMITER $$
@@ -71,6 +68,18 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getAllComments;
+DELIMITER $$
+CREATE PROCEDURE getAllComments(IN pIdT SMALLINT(6))
+BEGIN
+    SELECT Commentaire 
+    FROM CoutMembreTaches 
+    WHERE IdT = pIdT;
+END $$
+DELIMITER ;
+
+
 
 DELIMITER $$
 CREATE PROCEDURE displayAllDifficulties()

@@ -100,10 +100,8 @@ function getMostVotedChoice($row) {
                     </tr>
                 </tbody>
         </table>
-
-        <!-- Champs cachés pour transmettre des informations -->
+        <?php $comments=displayAllComments($currentTask['IdT']);?>
         <input type="hidden" name="IdT" value="<?php echo $currentTask['IdT']; ?>">
-        <input type="hidden" name="userId" value="<?php echo isset($_SESSION['IdUser']) ? htmlspecialchars($_SESSION['IdUser']) : ''; ?>">
         <input type="submit" class="next-button" value="Suivant">
         </form>
 
