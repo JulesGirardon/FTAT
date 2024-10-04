@@ -28,16 +28,29 @@ END $$
 
 DROP PROCEDURE IF EXISTS getAllVotes;
 DELIMITER $$
+
 CREATE PROCEDURE getAllVotes(IN ID INT)
 BEGIN
-    SELECT *
-    FROM coutmembretaches
-    JOIN taches ON coutmembretaches.idT = taches.idT
-    WHERE taches.IdP = ID;
+    SELECT 
+        t.IdT,
+        COUNT(CASE WHEN cm.CoutMT = '?' THEN 1 END) AS Occurrence_,
+        COUNT(CASE WHEN cm.CoutMT = '1' THEN 1 END) AS Occurrence_1,
+        COUNT(CASE WHEN cm.CoutMT = '3' THEN 1 END) AS Occurrence_3,
+        COUNT(CASE WHEN cm.CoutMT = '5' THEN 1 END) AS Occurrence_5,
+        COUNT(CASE WHEN cm.CoutMT = '10' THEN 1 END) AS Occurrence_10,
+        COUNT(CASE WHEN cm.CoutMT = '15' THEN 1 END) AS Occurrence_15,
+        COUNT(CASE WHEN cm.CoutMT = '25' THEN 1 END) AS Occurrence_25,
+        COUNT(CASE WHEN cm.CoutMT = '999' THEN 1 END) AS Occurrence_999
+    FROM 
+        coutmembretaches cm
+    JOIN taches t ON cm.IdT = t.IdT
+    WHERE 
+        t.IdP = ID
+    GROUP BY 
+        t.IdT;
 END$$
 
 DELIMITER ;
-
 DELIMITER $$
 
 CREATE PROCEDURE displayAllDifficulties()
