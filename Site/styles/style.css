@@ -1,0 +1,280 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: "Arial", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 100vh;
+    margin: auto;
+}
+
+main {
+    background: #315659;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    width: 500px;
+    height: 300px;
+
+    border: 2px solid #253031;
+    border-radius: 25px;
+}
+
+.signin {
+    height: 500px;
+}
+
+.add_project, .create_task {
+    height: 400px;
+}
+
+.add_revue, .add_retro {
+    width: 550px;
+    height: 350px;
+}
+
+
+main h1, main h2 {
+    margin: 10px;
+    color: white;
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    justify-content: center;
+}
+
+.form-group input, .form-group textarea, .projet input, .projet textarea {
+    margin: 3%;
+
+    width: 300px;
+    height: 35px;
+
+    padding-left: 10px;
+
+    border: 2px solid #253031;
+    border-radius: 15px;
+}
+
+.form-group textarea, .projet textarea {
+    padding-top: 5px;
+}
+
+.form-group button, .projet button {
+    width: 125px;
+    height: 35px;
+
+    border: 2px solid #253031;
+    border-radius: 15px;
+}
+
+.form-group button:hover, .projet button:hover {
+    background: #BCAB79;
+}
+.form-group select, .projet select {
+    border-radius: 15px;
+    border: 2px solid #253031;
+    margin: 5px;
+    text-align: center;
+    height: 35px;
+}
+
+.form-group label {
+    color: white;
+    margin: 5px;
+}
+
+.form-group a {
+    text-decoration: none;
+    color: white;
+    margin: 5px;
+}
+
+.form-group a:hover {
+    color: #BCAB79;
+}
+
+.index {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "aside dashboard";
+    grid-template-columns: 250px 1fr;
+    grid-template-rows: auto 1fr;
+}
+
+header {
+    grid-area: header;
+
+    margin: 20px;
+    padding: 0 20px 0 20px;
+    height: 50px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border: 2px solid #253031;
+    border-radius: 25px;
+
+    background: #315659;
+
+    color: white;
+}
+
+header a, header button, .dashboard-action {
+    text-decoration: none;
+    color: #253031;
+
+    background: white;
+    padding: 7px;
+    border-radius: 15px;
+    border: 1px solid #315659;
+}
+
+header a:hover, header button:hover, .dashboard-action:hover {
+    background: #BCAB79;
+}
+
+.dashboard-action {
+    margin: 15px;
+}
+
+aside {
+    grid-area: aside;
+    background: #315659;
+
+    margin: 20px;
+    padding: 20px;
+
+    border: 2px solid #253031;
+    border-radius: 25px;
+}
+
+aside h3 a {
+    text-decoration: none;
+    color: #BCAB79;
+}
+
+
+aside hr {
+    margin: 5px 0 5px 0;
+}
+
+aside ul {
+    list-style: none;
+}
+
+aside ul li {
+    margin-bottom: 10px;
+}
+
+aside ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+aside ul li a:hover {
+    color: #BCAB79;
+}
+
+.projet {
+    grid-area: dashboard;
+
+    height: auto;
+    width: auto;
+
+    margin: 20px;
+    padding: 20px;
+
+    background: #315659;
+
+    border: 2px solid #253031;
+    border-radius: 25px;
+
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.projet-info {
+    display: flex;
+    width: 95%;
+    flex-direction: column;
+}
+
+.projet-element {
+    margin-top: 15px;
+}
+
+.projet table {
+    padding: 15px;
+    border: none;
+}
+
+.projet table th, .projet table td {
+    border-radius: 15px;
+    padding: 5px;
+    border: 2px solid #BCAB79;
+}
+
+.projet table td {
+    border: 2px solid #253031;
+}
+
+.projet-membres, .projet-task, .projet-sprints {
+    border: 2px solid #BCAB79;
+    border-radius: 15px;
+
+    margin-top: 15px;
+    padding: 10px;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-add-membre-projet, .form-add-tache-projet, .form-add-sprint-projet, .projet-list-membres, .projet-list-taches, .projet-list-sprints {
+    width: 90%;
+    margin: 15px;
+    padding: 10px;
+
+    border: 2px solid #253031;
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+}
+
+.projet-list-membres, .projet-list-taches, .projet-list-sprints {
+    justify-content: center;
+}
+
+.form-add-membre-projet, .form-add-tache-projet, .form-add-sprint-projet {
+    justify-content: space-around;
+}
+
+.form-add-membre-projet form, .form-add-tache-projet form, .form-add-sprint-projet form {
+    width: 100%;
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}

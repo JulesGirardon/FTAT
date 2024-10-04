@@ -11,7 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //Vérification mail et mdp
         $sql = "SELECT * FROM ftat.utilisateurs WHERE mail = :mail";
         $stmt = $bdd->prepare($sql);
-        $stmt->execute([':mail' => $mail]);
+        $stmt->bindParam(':mail', $mail);
+        $stmt->execute();
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -33,3 +34,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+

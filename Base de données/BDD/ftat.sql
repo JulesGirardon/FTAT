@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS prioritestaches;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS equipesprj;
+DROP TABLE IF EXISTS projets;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -38,11 +39,12 @@ CREATE TABLE projets (
 
 CREATE TABLE equipesprj (
                             IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
-                            NomEqPrj VARCHAR(100),
+                            NomEqPrj VARCHAR(55),
                             IdP SMALLINT(6) NOT NULL,
-                            PRIMARY KEY (IdEq),
+                            PRIMARY KEY(IdEq),
                             CONSTRAINT FK_Equipes_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 -- Table des utilisateurs
@@ -74,7 +76,7 @@ CREATE TABLE roles (
 -- --------------------------------------------------------
 
 CREATE TABLE etatstaches (
-                             IdEtat SMALLINT(4) NOT NULL AUTO_INCREMENT,
+                             IdEtat SMALLINT(4) NOT NULL,
                              Etat VARCHAR(50) NOT NULL,
                              PRIMARY KEY (IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -92,7 +94,7 @@ INSERT INTO etatstaches (IdEtat, Etat) VALUES
 -- --------------------------------------------------------
 
 CREATE TABLE prioritestaches (
-                                 idPriorite TINYINT(1) NOT NULL AUTO_INCREMENT,
+                                 idPriorite TINYINT(1) NOT NULL,
                                  Priorite VARCHAR(15) NOT NULL,
                                  valPriorite TINYINT(1) NOT NULL,
                                  PRIMARY KEY (idPriorite)
@@ -105,10 +107,10 @@ INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
                                                                     (3, '3', 3),
                                                                     (4, '4', 4),
                                                                     (5, '5', 5),
-                                                                    (6, 'MUST (MoSCoW)', 5),
-                                                                    (7, 'SHOULD (MoSCoW)', 4),
+                                                                    (6, 'MUST', 5),
+                                                                    (7, 'SHOULD', 4),
                                                                     (8, 'Could', 2),
-                                                                    (9, 'WONT (MoSCoW)', 0);
+                                                                    (9, 'WONT', 0);
 
 -- --------------------------------------------------------
 -- Table des idées bac à sable
@@ -132,7 +134,7 @@ CREATE TABLE taches (
                         IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
                         TitreT VARCHAR(50) NOT NULL,
                         UserStoryT VARCHAR(300) NOT NULL,
-                        IdP SMALLINT(6) NOT NULL,
+                        IdP INT NOT NULL,
                         CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
                         IdPriorite TINYINT(1) NOT NULL,
                         PRIMARY KEY (IdT),
@@ -161,7 +163,7 @@ CREATE TABLE sprints (
 -- --------------------------------------------------------
 
 CREATE TABLE sprintbacklog (
-                               IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
+                               IdT SMALLINT(6) NOT NULL,
                                IdS SMALLINT(6) NOT NULL,
                                IdU SMALLINT(6) NOT NULL,
                                IdEtat SMALLINT(6) NOT NULL,
@@ -198,6 +200,97 @@ CREATE TABLE membre_equipe (
                                CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DELIMITER $$
+
+CREATE TRIGGER before_insert_rolesutilisateurprojet_ScrumMaster
+    BEFORE INSERT ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = ftat.getIdRole('Scrum Master') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = ftat.getIdRole('Scrum Master');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Scrum Master déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_rolesutilisateurprojet_ProductOwner
+    BEFORE INSERT ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = ftat.getIdRole('Product Owner') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = ftat.getIdRole('Product Owner');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Product Owner déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_rolesutilisateurprojet_ScrumMaster
+    BEFORE UPDATE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = ftat.getIdRole('Scrum Master') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = ftat.getIdRole('Scrum Master');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Scrum Master déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_rolesutilisateurprojet_ProductOwner
+    BEFORE UPDATE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = ftat.getIdRole('Product Owner') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = ftat.getIdRole('Product Owner');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Product Owner déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 -- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
@@ -214,17 +307,17 @@ BEGIN
         SELECT 1
         FROM sprints
         WHERE IdEq = NEW.IdEq
-          AND (
+        AND (
             (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
-            )
+        )
     ) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
-    END IF;
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+END IF;
 END$$
 DELIMITER ;
 
@@ -242,18 +335,18 @@ BEGIN
         SELECT 1
         FROM sprints
         WHERE IdEq = NEW.IdEq
-          AND IdS != OLD.IdS
-          AND (
+        AND IdS != OLD.IdS
+        AND (
             (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
-            )
+        )
     ) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
-    END IF;
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+END IF;
 END;
 $$
 
@@ -270,45 +363,101 @@ CREATE TRIGGER before_delete_user_from_project
     BEFORE DELETE ON utilisateurs
     FOR EACH ROW
 BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU;
+    END$$
+
+    DELIMITER ;
+
+
+DELIMITER $$
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
+-- --------------------------------------------------------
+
+CREATE TRIGGER before_delete_role_from_project
+    BEFORE DELETE ON rolesutilisateurprojet
+FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU
+    AND IdT IN (
+       SELECT IdT
+       FROM taches
+       WHERE IdP = OLD.IdP
+    );
+END$$
+DELIMITER ;
+
+-- Ce trigger s'assure qu'une équipe ne peut pas avoir deux taches avec le meme titre dans un projet.
+DELIMITER $$
+
+CREATE TRIGGER verify_unique_task_per_team
+    BEFORE INSERT ON taches
+    FOR EACH ROW
+BEGIN
     DECLARE task_count INT;
 
     SELECT COUNT(*) INTO task_count
+    FROM taches
     WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
 
     IF task_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
+            SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
     END IF;
 END$$
 
 DELIMITER ;
 
+-- Ces triggers s'assure que la vélocité d'une équipe ne peut pas etre négative.
+DELIMITER $$
 
+CREATE TRIGGER check_team_velocity
+    BEFORE INSERT ON sprints
+    FOR EACH ROW
+BEGIN
+    -- Vérifier que la vélocité de l'équipe est positive
+    IF NEW.VelociteEqPrj < 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
+    END IF;
+END; $$
+
+CREATE TRIGGER check_team_velocity_update
+    BEFORE UPDATE ON sprints
+    FOR EACH ROW
+BEGIN
+    -- Vérifier que la vélocité de l'équipe est positive
+    IF NEW.VelociteEqPrj < 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
+    END IF;
+END; $$
+
+DELIMITER ;
+
+-- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
 DELIMITER $$
 
 CREATE TRIGGER prevent_invalid_task_assignment
-BEFORE INSERT ON sprintbacklog
-FOR EACH ROW
-BEGIN
-  DECLARE team_id_of_user SMALLINT;
-
-  -- Récupère le team ID de l'utilisateur assigné à la tache
-  SELECT IdEq INTO team_id_of_user
-  FROM utilisateurs
-  WHERE IdU = NEW.IdU;
-
-CREATE TRIGGER before_delete_role_from_project
-    BEFORE DELETE ON rolesutilisateurprojet
+    BEFORE INSERT ON sprintbacklog
     FOR EACH ROW
 BEGIN
-    DELETE FROM sprintbacklog
-    WHERE IdU = OLD.IdU
-      AND IdT IN (
-        SELECT IdT
-        FROM taches
-        WHERE IdP = OLD.IdP
-    );
-END$$
+    DECLARE team_id_of_user SMALLINT;
+
+    -- Récupère le team ID de l'utilisateur assigné à la tache
+    SELECT IdEq INTO team_id_of_user
+    FROM utilisateurs
+    WHERE IdU = NEW.IdU;
+
+    -- Si la team de l'utilisateur ne correspond pas à la team assignée à la tache, empêche l'assignation
+    IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la même équipe que la tâche.";
+    END IF;
+END; $$
 
 DELIMITER ;
 
