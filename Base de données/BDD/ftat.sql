@@ -134,9 +134,10 @@ CREATE TABLE taches (
                         IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
                         TitreT VARCHAR(50) NOT NULL,
                         UserStoryT VARCHAR(300) NOT NULL,
-                        IdP INT NOT NULL,
+                        IdP SMALLINT(6) NOT NULL,
                         CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
                         IdPriorite TINYINT(1) NOT NULL,
+                        ApprouvedT ENUM('0','1'),
                         PRIMARY KEY (IdT),
                         CONSTRAINT FK_Taches_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP),
                         CONSTRAINT FK_Taches_Priorite FOREIGN KEY (IdPriorite) REFERENCES prioritestaches(idPriorite)
@@ -401,7 +402,7 @@ BEGIN
 
     SELECT COUNT(*) INTO task_count
     FROM taches
-    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
+    WHERE TitreT = NEW.TitreT AND IdP = NEW.IdP;
 
     IF task_count > 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -438,7 +439,7 @@ END; $$
 
 DELIMITER ;
 
--- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
+-- Ce trigger s'assure que les taches ne peut etre assignés que a des utilisateurs qui apparatiennent a l'équipe
 DELIMITER $$
 
 CREATE TRIGGER prevent_invalid_task_assignment
@@ -448,12 +449,12 @@ BEGIN
     DECLARE team_id_of_user SMALLINT;
 
     -- Récupère le team ID de l'utilisateur assigné à la tache
-    SELECT IdEq INTO team_id_of_user
+    SELECT IdU INTO team_id_of_user
     FROM utilisateurs
     WHERE IdU = NEW.IdU;
 
     -- Si la team de l'utilisateur ne correspond pas à la team assignée à la tache, empêche l'assignation
-    IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
+    IF team_id_of_user != (SELECT IdP FROM taches WHERE IdT = NEW.IdT) THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la même équipe que la tâche.";
     END IF;
