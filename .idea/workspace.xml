@@ -5,6 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a46b2f3-030e-41b9-bfa4-5ec6ae548776" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436/storage_v2/_src_/schema/ftat.gR0wAA.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d148abbb-5546-4b50-9728-f5f5f5ed85da.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d148abbb-5546-4b50-9728-f5f5f5ed85da/storage_v2/_src_/schema/ftat.gR0wAA.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" afterDir="false" />
     </list>
@@ -30,7 +36,6 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mxldPylzqAKP61QdmCME50IqR7" />
-
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -55,7 +60,6 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-
         <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.23339.16" />
         <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.23339.16" />
       </set>
@@ -70,7 +74,7 @@
       <option name="presentableId" value="Default" />
       <updated>1728026196101</updated>
       <workItem from="1728026197537" duration="3121000" />
-      <workItem from="1728036562277" duration="142000" />
+      <workItem from="1728036562277" duration="607000" />
     </task>
     <servers />
   </component>
