@@ -148,6 +148,7 @@ CREATE TABLE `sprints` (
 
 -- --------------------------------------------------------
 
+<<<<<<< Updated upstream
 --
 -- Structure de la table `taches`
 --
@@ -159,6 +160,18 @@ CREATE TABLE `taches` (
   `IdEq` smallint(6) NOT NULL,
   `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
   `IdPriorite` tinyint(1) NOT NULL
+=======
+CREATE TABLE sprintbacklog (
+                               IdT SMALLINT(6) NOT NULL,
+                               IdS SMALLINT(6) NOT NULL,
+                               IdU SMALLINT(6) NOT NULL,
+                               IdEtat SMALLINT(6) NOT NULL,
+                               PRIMARY KEY (IdT),
+                               CONSTRAINT FK_SB_Taches FOREIGN KEY (IdT) REFERENCES taches(IdT),
+                               CONSTRAINT FK_SB_Sprints FOREIGN KEY (IdS) REFERENCES sprints(IdS),
+                               CONSTRAINT FK_SB_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
+                               CONSTRAINT FK_SB_EtatTaches FOREIGN KEY (IdEtat) REFERENCES etatstaches(IdEtat)
+>>>>>>> Stashed changes
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -211,6 +224,7 @@ ALTER TABLE `prioritestaches`
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`IdR`);
 
+<<<<<<< Updated upstream
 --
 -- Index pour la table `rolesutilisateurprojet`
 --
@@ -219,6 +233,119 @@ ALTER TABLE `rolesutilisateurprojet`
   ADD KEY `IdR` (`IdR`),
   ADD KEY `IdEq` (`IdEq`),
   ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
+=======
+CREATE TRIGGER before_insert_rolesutilisateurprojet_ScrumMaster
+    BEFORE INSERT ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = getIdRole('Scrum Master') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = getIdRole('Scrum Master');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Scrum Master déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_rolesutilisateurprojet_ProductOwner
+    BEFORE INSERT ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = getIdRole('Product Owner') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = getIdRole('Product Owner');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Product Owner déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_rolesutilisateurprojet_ScrumMaster
+    BEFORE UPDATE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = getIdRole('Scrum Master') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = getIdRole('Scrum Master');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Scrum Master déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_rolesutilisateurprojet_ProductOwner
+    BEFORE UPDATE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DECLARE count_roles INT;
+
+    IF NEW.IdR = getIdRole('Product Owner') THEN
+        SELECT COUNT(*)
+        INTO count_roles
+        FROM rolesutilisateurprojet AS rup
+        WHERE rup.IdP = NEW.IdP
+          AND rup.IdR = getIdRole('Product Owner');
+
+        IF count_roles > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Product Owner déjà existant pour ce projet !';
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
+
+CREATE TRIGGER check_unique_active_sprint
+    BEFORE INSERT ON sprints
+    FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM sprints
+        WHERE IdEq = NEW.IdEq
+          AND (
+            (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
+                OR
+            (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
+                OR
+            (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
+            )
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+    END IF;
+END$$
+DELIMITER ;
+>>>>>>> Stashed changes
 
 --
 -- Index pour la table `sprintbacklog`
@@ -269,6 +396,7 @@ ALTER TABLE `rolesutilisateurprojet`
   ADD CONSTRAINT `FK_RoleUtil_Roles` FOREIGN KEY (`IdR`) REFERENCES `roles` (`IdR`),
   ADD CONSTRAINT `FK_RoleUtil_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
 
+<<<<<<< Updated upstream
 --
 -- Contraintes pour la table `sprintbacklog`
 --
@@ -295,3 +423,60 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+=======
+CREATE TRIGGER before_delete_user_from_project
+    BEFORE DELETE ON utilisateurs
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+-- --------------------------------------------------------
+-- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
+-- --------------------------------------------------------
+
+CREATE TRIGGER before_delete_role_from_project
+    BEFORE DELETE ON rolesutilisateurprojet
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sprintbacklog
+    WHERE IdU = OLD.IdU
+      AND IdT IN (
+        SELECT IdT
+        FROM taches
+        WHERE IdP = OLD.IdP
+    );
+END$$
+
+DELIMITER $$
+
+CREATE FUNCTION getIdRole(role VARCHAR(50))
+    RETURNS INT
+    DETERMINISTIC
+BEGIN
+    DECLARE roleId INT;
+
+    IF role IN ('Scrum Master', 'Product Owner', 'Member') THEN
+        SELECT IdR
+        INTO roleId
+        FROM ftat.roles
+        WHERE DescR = role;
+
+        RETURN roleId;
+    ELSE
+        RETURN -1;
+    END IF;
+END $$
+
+DELIMITER ;
+
+DELIMITER ;
+
+COMMIT;
+>>>>>>> Stashed changes
