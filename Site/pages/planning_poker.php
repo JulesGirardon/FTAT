@@ -12,7 +12,7 @@
     <?php
     session_start();
     $_SESSION["currPrj"] = 1; // MODIFIER AVEC LA SESSION PROJET ACTUEL
-    $_SESSION["IdUser"] = 2; // MODIFIER AVEC LA SESSION USER ACTUEL
+    $_SESSION["IdUser"] = 3; // MODIFIER AVEC LA SESSION USER ACTUEL
     if (!isset($_SESSION['NextPage'])) {
         $_SESSION['NextPage'] = 0;
     }
@@ -24,6 +24,7 @@
     $difficulties = displayAllDifficulties();
     if ($_SESSION["NextPage"] >= count($results)):
         header("Location:../index.php");
+        exit();
     else: ?>
         <table border="1">
             <thead>

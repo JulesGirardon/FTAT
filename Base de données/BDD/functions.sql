@@ -26,6 +26,27 @@ BEGIN
     RETURN insertedId;
 END $$
 
+DROP FUNCTION IF EXISTS insertCoutTache;
+DELIMITER $$
+CREATE FUNCTION insertCoutTache(
+    pIdT INT, 
+    Cout ENUM('?', '1', '3', '5', '10', '15', '25', '999'), 
+    Approuved ENUM('0', '1')
+) RETURNS INT
+BEGIN
+    DECLARE affectedRows INT;
+    UPDATE Taches 
+    SET CoutT = Cout, ApprouvedT = Approuved
+    WHERE IdT = pIdT;
+    SET affectedRows = ROW_COUNT();
+    RETURN affectedRows;
+END $$
+
+
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS getAllVotes;
 DELIMITER $$
 CREATE PROCEDURE getAllVotes(IN ID INT)
@@ -50,8 +71,8 @@ BEGIN
 END$$
 
 DELIMITER ;
-DELIMITER $$
 
+DELIMITER $$
 CREATE PROCEDURE displayAllDifficulties()
 BEGIN
   DECLARE enum_values TEXT;

@@ -66,3 +66,17 @@ function displayAllDifficulties()
         exit;
     }
 }
+function insertCoutScrum($idT, $cout)
+{
+    global $bdd;
+    try {
+        $stmt = $bdd->prepare("SELECT insertCoutTache(:idT, :cout, :bool)");
+        $stmt->bindParam(':idT', $idT);
+        $stmt->bindParam(':cout', $cout);
+        $stmt->bindValue(':bool', 1);  
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo "Erreur de base de données : " . $e->getMessage();
+        exit;
+    }
+}
