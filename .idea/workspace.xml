@@ -5,43 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a46b2f3-030e-41b9-bfa4-5ec6ae548776" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/FTAT.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Base de données/BDD/function.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Logo/icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/includes/connexionBDD.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/ajouter_idee.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/bacasable.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/bordgene.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/bordindiv.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/pages/logout.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/add_retrospective_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/add_revue_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/ajouter_idee_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/create_sprint_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/create_sprintbacklog_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/create_task_process.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/delete_idee.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Site/process/signin_process.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/2b9ebeaf-1857-4538-b7d3-ee870b355436/storage_v2/_src_/schema/ftat.gR0wAA.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Base de données/Assets/agiletools.sql.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Base de données/Assets/agiletools.sql.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Base de données/BDD/ftat.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/includes/aside.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/includes/function.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/includes/function.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/includes/header.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/includes/header.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/create_sprint.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/create_sprint.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/login.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/pages/projet.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/pages/projet.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/process/create_project_process.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/process/create_project_process.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Site/process/login_process.php" beforeDir="false" afterPath="$PROJECT_DIR$/Site/process/login_process.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +67,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1728026196101</updated>
-      <workItem from="1728026197537" duration="869000" />
+      <workItem from="1728026197537" duration="2207000" />
     </task>
     <servers />
   </component>

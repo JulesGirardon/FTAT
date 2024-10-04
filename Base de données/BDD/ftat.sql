@@ -208,12 +208,12 @@ CREATE TRIGGER before_insert_rolesutilisateurprojet_ScrumMaster
 BEGIN
     DECLARE count_roles INT;
 
-    IF NEW.IdR = getIdRole('Scrum Master') THEN
+    IF NEW.IdR = ftat.getIdRole('Scrum Master') THEN
         SELECT COUNT(*)
         INTO count_roles
         FROM rolesutilisateurprojet AS rup
         WHERE rup.IdP = NEW.IdP
-          AND rup.IdR = getIdRole('Scrum Master');
+          AND rup.IdR = ftat.getIdRole('Scrum Master');
 
         IF count_roles > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -231,12 +231,12 @@ CREATE TRIGGER before_insert_rolesutilisateurprojet_ProductOwner
 BEGIN
     DECLARE count_roles INT;
 
-    IF NEW.IdR = getIdRole('Product Owner') THEN
+    IF NEW.IdR = ftat.getIdRole('Product Owner') THEN
         SELECT COUNT(*)
         INTO count_roles
         FROM rolesutilisateurprojet AS rup
         WHERE rup.IdP = NEW.IdP
-          AND rup.IdR = getIdRole('Product Owner');
+          AND rup.IdR = ftat.getIdRole('Product Owner');
 
         IF count_roles > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -254,12 +254,12 @@ CREATE TRIGGER before_update_rolesutilisateurprojet_ScrumMaster
 BEGIN
     DECLARE count_roles INT;
 
-    IF NEW.IdR = getIdRole('Scrum Master') THEN
+    IF NEW.IdR = ftat.getIdRole('Scrum Master') THEN
         SELECT COUNT(*)
         INTO count_roles
         FROM rolesutilisateurprojet AS rup
         WHERE rup.IdP = NEW.IdP
-          AND rup.IdR = getIdRole('Scrum Master');
+          AND rup.IdR = ftat.getIdRole('Scrum Master');
 
         IF count_roles > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -277,12 +277,12 @@ CREATE TRIGGER before_update_rolesutilisateurprojet_ProductOwner
 BEGIN
     DECLARE count_roles INT;
 
-    IF NEW.IdR = getIdRole('Product Owner') THEN
+    IF NEW.IdR = ftat.getIdRole('Product Owner') THEN
         SELECT COUNT(*)
         INTO count_roles
         FROM rolesutilisateurprojet AS rup
         WHERE rup.IdP = NEW.IdP
-          AND rup.IdR = getIdRole('Product Owner');
+          AND rup.IdR = ftat.getIdRole('Product Owner');
 
         IF count_roles > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -389,4 +389,76 @@ BEGIN
     );
 END$$
 DELIMITER ;
+
+-- Ce trigger s'assure qu'une équipe ne peut pas avoir deux taches avec le meme titre dans un projet.
+DELIMITER $$
+
+CREATE TRIGGER verify_unique_task_per_team
+    BEFORE INSERT ON taches
+    FOR EACH ROW
+BEGIN
+    DECLARE task_count INT;
+
+    SELECT COUNT(*) INTO task_count
+    FROM taches
+    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
+
+    IF task_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Ces triggers s'assure que la vélocité d'une équipe ne peut pas etre négative.
+DELIMITER $$
+
+CREATE TRIGGER check_team_velocity
+    BEFORE INSERT ON sprints
+    FOR EACH ROW
+BEGIN
+    -- Vérifier que la vélocité de l'équipe est positive
+    IF NEW.VelociteEqPrj < 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
+    END IF;
+END; $$
+
+CREATE TRIGGER check_team_velocity_update
+    BEFORE UPDATE ON sprints
+    FOR EACH ROW
+BEGIN
+    -- Vérifier que la vélocité de l'équipe est positive
+    IF NEW.VelociteEqPrj < 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur : La vélocité d'un sprint ne peut pas etre négatif.";
+    END IF;
+END; $$
+
+DELIMITER ;
+
+-- Ce trigger s'assure que les taches ne peut t'etre assignés que a des utilisateurs qui apparatiennent a l'équipe
+DELIMITER $$
+
+CREATE TRIGGER prevent_invalid_task_assignment
+    BEFORE INSERT ON sprintbacklog
+    FOR EACH ROW
+BEGIN
+    DECLARE team_id_of_user SMALLINT;
+
+    -- Récupère le team ID de l'utilisateur assigné à la tache
+    SELECT IdEq INTO team_id_of_user
+    FROM utilisateurs
+    WHERE IdU = NEW.IdU;
+
+    -- Si la team de l'utilisateur ne correspond pas à la team assignée à la tache, empêche l'assignation
+    IF team_id_of_user != (SELECT IdEq FROM taches WHERE IdT = NEW.IdT) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = "Erreur: L'Utilisateur n'appartient pas à la même équipe que la tâche.";
+    END IF;
+END; $$
+
+DELIMITER ;
+
 COMMIT;
