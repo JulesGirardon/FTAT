@@ -3,8 +3,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$_SESSION["currPrj"] = 1; // Assurez-vous que cela est défini correctement ailleurs.
-$_SESSION["IdUser"] = 3; // Assurez-vous que cela est défini correctement ailleurs.
+$_SESSION["currPrj"] = 1; // MODIFIER AVEC LA SESSION PROJET ACTUEL
+$_SESSION["IdUser"] = 3; // MODIFIER AVEC LA SESSION USER ACTUEL
 
 if (!isset($_SESSION['NextPage'])) {
     $_SESSION['NextPage'] = 0;
@@ -15,20 +15,17 @@ if (!isset($_SESSION['SessionPage'])) {
 
 include_once "../process/function_tasks.php";
 
-// Récupérer les tâches et difficultés pour le projet en cours
 $results = displayAllVotes($_SESSION["currPrj"]);
 $difficulties = displayAllDifficulties();
 
 if ($_SESSION["NextPage"] >= count($results)) {
-    // Redirection si toutes les tâches ont été parcourues
     header("Location:../index.php");
     exit();
 }
-
-// Récupérer la tâche actuelle
 $currentTask = $results[$_SESSION["NextPage"]];
 
-function getMostVotedChoice($row) {
+function getMostVotedChoice($row)
+{
     $votes = [
         '?'   => $row['Occurrence_'],
         '1'   => $row['Occurrence_1'],
@@ -100,12 +97,15 @@ function getMostVotedChoice($row) {
                     </tr>
                 </tbody>
         </table>
-        <?php $comments=displayAllComments($currentTask['IdT']);?>
+        <?php $comments = displayAllComments($currentTask['IdT']); ?>
         <input type="hidden" name="IdT" value="<?php echo $currentTask['IdT']; ?>">
         <input type="submit" class="next-button" value="Suivant">
         </form>
+        <?php $comments = displayAllComments($currentTask['IdT']);
 
-        <!-- Liens additionnels -->
+        foreach ($comments as $comment) {
+            echo $comment['Commentaire'] . "<br>";
+        } ?>
         <a href="./planning_poker.php" class="btn">Planning formulaire</a>
     </main>
 
