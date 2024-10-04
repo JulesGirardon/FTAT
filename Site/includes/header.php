@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> main
 <?php
 session_start(); // Démarrage de la session
 
 // On vérifie si l'utilisateur est connecté, sinon on redirige vers la page de connexion
 if (!isset($_SESSION['username'])) {
-<<<<<<< HEAD
     header('Location: ./pages/login.php'); // Redirige vers la page de connexion si non connecté
-=======
-    header('Location: login.php'); // Redirige vers la page de connexion si non connecté
->>>>>>> main
     exit;
 }
 ?>
@@ -105,7 +96,3 @@ if (!isset($_SESSION['username'])) {
 
 </body>
 </html>
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> main

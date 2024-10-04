@@ -15,12 +15,11 @@ if (isset($_POST['project_name'], $_POST['project_description'], $_POST['project
             $bdd->beginTransaction();
 
             $sql_addProject = "INSERT INTO ftat.projets(NomP, DescriptionP, DateDebutP, DateFinP) VALUES (:NomP, :DescriptionP, CURDATE(), :DateFinP)";
-
             $stmt = $bdd->prepare($sql_addProject);
             $stmt->bindParam(":NomP", $project_name);
             $stmt->bindParam(":DescriptionP", $project_description);
             $stmt->bindParam(":DateFinP", $project_date_fin);
-
+          
             $stmt->execute();
 
             $IdProject = $bdd->lastInsertId();

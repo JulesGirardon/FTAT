@@ -1,7 +1,6 @@
 <?php
 include "includes/connexionBDD.php";
 include "includes/function.php";
-
 session_start();
 
 if (!isset($_SESSION['is_logged_in'])) {
@@ -107,3 +106,4 @@ echo '<p><a href="pages/create_sprint.php"> Créer un sprint</p>';
             echo '<p><a href="pages/add_retrospective.php"> Ajouter une rétrospective</p>';
             echo '<p><a href="pages/add_revue.php"> Ajouter une revue</p>';
 -->
+

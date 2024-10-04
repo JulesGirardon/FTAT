@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> main
 <?php
 session_start();
 
