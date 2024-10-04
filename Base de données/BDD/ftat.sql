@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS prioritestaches;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS equipesprj;
+DROP TABLE IF EXISTS projets;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -38,11 +39,12 @@ CREATE TABLE projets (
 
 CREATE TABLE equipesprj (
                             IdEq SMALLINT(6) NOT NULL AUTO_INCREMENT,
-                            NomEqPrj VARCHAR(100),
+                            NomEqPrj VARCHAR(55),
                             IdP SMALLINT(6) NOT NULL,
-                            PRIMARY KEY (IdEq),
+                            PRIMARY KEY(IdEq),
                             CONSTRAINT FK_Equipes_Projets FOREIGN KEY (IdP) REFERENCES projets(IdP)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 -- Table des utilisateurs
@@ -74,7 +76,7 @@ CREATE TABLE roles (
 -- --------------------------------------------------------
 
 CREATE TABLE etatstaches (
-                             IdEtat SMALLINT(4) NOT NULL AUTO_INCREMENT,
+                             IdEtat SMALLINT(4) NOT NULL,
                              Etat VARCHAR(50) NOT NULL,
                              PRIMARY KEY (IdEtat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -92,7 +94,7 @@ INSERT INTO etatstaches (IdEtat, Etat) VALUES
 -- --------------------------------------------------------
 
 CREATE TABLE prioritestaches (
-                                 idPriorite TINYINT(1) NOT NULL AUTO_INCREMENT,
+                                 idPriorite TINYINT(1) NOT NULL,
                                  Priorite VARCHAR(15) NOT NULL,
                                  valPriorite TINYINT(1) NOT NULL,
                                  PRIMARY KEY (idPriorite)
@@ -105,10 +107,10 @@ INSERT INTO prioritestaches (idPriorite, Priorite, valPriorite) VALUES
                                                                     (3, '3', 3),
                                                                     (4, '4', 4),
                                                                     (5, '5', 5),
-                                                                    (6, 'MUST (MoSCoW)', 5),
-                                                                    (7, 'SHOULD (MoSCoW)', 4),
+                                                                    (6, 'MUST', 5),
+                                                                    (7, 'SHOULD', 4),
                                                                     (8, 'Could', 2),
-                                                                    (9, 'WONT (MoSCoW)', 0);
+                                                                    (9, 'WONT', 0);
 
 -- --------------------------------------------------------
 -- Table des idées bac à sable
@@ -132,7 +134,7 @@ CREATE TABLE taches (
                         IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
                         TitreT VARCHAR(50) NOT NULL,
                         UserStoryT VARCHAR(300) NOT NULL,
-                        IdP SMALLINT(6) NOT NULL,
+                        IdP INT NOT NULL,
                         CoutT ENUM('?', '1', '3', '5', '10', '15', '25', '999') NOT NULL DEFAULT '?',
                         IdPriorite TINYINT(1) NOT NULL,
                         PRIMARY KEY (IdT),
@@ -160,26 +162,8 @@ CREATE TABLE sprints (
 -- Table du sprint backlog
 -- --------------------------------------------------------
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
---
--- Structure de la table `taches`
---
-
-CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL,
-  `TitreT` varchar(50) NOT NULL,
-  `UserStoryT` varchar(300) NOT NULL,
-  `IdEq` smallint(6) NOT NULL,
-  `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL
-=======
 CREATE TABLE sprintbacklog (
                                IdT SMALLINT(6) NOT NULL,
-=======
-CREATE TABLE sprintbacklog (
-                               IdT SMALLINT(6) NOT NULL AUTO_INCREMENT,
->>>>>>> main
                                IdS SMALLINT(6) NOT NULL,
                                IdU SMALLINT(6) NOT NULL,
                                IdEtat SMALLINT(6) NOT NULL,
@@ -188,10 +172,6 @@ CREATE TABLE sprintbacklog (
                                CONSTRAINT FK_SB_Sprints FOREIGN KEY (IdS) REFERENCES sprints(IdS),
                                CONSTRAINT FK_SB_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU),
                                CONSTRAINT FK_SB_EtatTaches FOREIGN KEY (IdEtat) REFERENCES etatstaches(IdEtat)
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> main
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -220,25 +200,8 @@ CREATE TABLE membre_equipe (
                                CONSTRAINT FK_MembreEquipe_Utilisateurs FOREIGN KEY (IdU) REFERENCES utilisateurs(IdU)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- --------------------------------------------------------
--- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
--- --------------------------------------------------------
-
-
 DELIMITER $$
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
---
--- Index pour la table `rolesutilisateurprojet`
---
-ALTER TABLE `rolesutilisateurprojet`
-  ADD PRIMARY KEY (`IdR`,`IdEq`),
-  ADD KEY `IdR` (`IdR`),
-  ADD KEY `IdEq` (`IdEq`),
-  ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
-=======
 CREATE TRIGGER before_insert_rolesutilisateurprojet_ScrumMaster
     BEFORE INSERT ON rolesutilisateurprojet
     FOR EACH ROW
@@ -329,8 +292,13 @@ BEGIN
 END$$
 DELIMITER ;
 
-=======
->>>>>>> main
+-- --------------------------------------------------------
+-- Trigger qui prévent l'insert de deux sprints actif en mêmes temps pour une team
+-- --------------------------------------------------------
+
+
+DELIMITER $$
+
 CREATE TRIGGER check_unique_active_sprint
     BEFORE INSERT ON sprints
     FOR EACH ROW
@@ -339,23 +307,19 @@ BEGIN
         SELECT 1
         FROM sprints
         WHERE IdEq = NEW.IdEq
-          AND (
+        AND (
             (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
-            )
+        )
     ) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
-    END IF;
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+END IF;
 END$$
 DELIMITER ;
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> main
 
 -- --------------------------------------------------------
 -- Trigger qui prévent l'update d'un'sprint lorsqu'un autre est dejà actif pour une team
@@ -371,18 +335,18 @@ BEGIN
         SELECT 1
         FROM sprints
         WHERE IdEq = NEW.IdEq
-          AND IdS != OLD.IdS
-          AND (
+        AND IdS != OLD.IdS
+        AND (
             (NEW.DateDebS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (NEW.DateFinS BETWEEN DateDebS AND DateFinS)
-                OR
+            OR
             (DateDebS BETWEEN NEW.DateDebS AND NEW.DateFinS)
-            )
+        )
     ) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
-    END IF;
+        SET MESSAGE_TEXT = 'Un autre sprint est déjà actif pour cette équipe dans cette période';
+END IF;
 END;
 $$
 
@@ -395,106 +359,34 @@ DELIMITER ;
 
 DELIMITER $$
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
---
--- Contraintes pour la table `sprintbacklog`
---
-ALTER TABLE `sprintbacklog`
-  ADD CONSTRAINT `FK_SB_EtatTaches` FOREIGN KEY (`IdEtat`) REFERENCES `etatstaches` (`IdEtat`),
-  ADD CONSTRAINT `FK_SB_Sprints` FOREIGN KEY (`IdS`) REFERENCES `sprints` (`IdS`),
-  ADD CONSTRAINT `FK_SB_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
-  ADD CONSTRAINT `FK_SB_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
-=======
-CREATE TRIGGER before_delete_user_from_project
-    BEFORE DELETE ON utilisateurs
-    FOR EACH ROW
-BEGIN
-    DECLARE task_count INT;
->>>>>>> main
-
-    SELECT COUNT(*) INTO task_count
-    WHERE TitreT = NEW.TitreT AND IdEq = NEW.IdEq;
-
-    IF task_count > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Erreur : Une tache avec ce titre existe déjà dans cette équipe.';
-    END IF;
-END$$
-
-<<<<<<< HEAD
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-=======
 CREATE TRIGGER before_delete_user_from_project
     BEFORE DELETE ON utilisateurs
     FOR EACH ROW
 BEGIN
     DELETE FROM sprintbacklog
     WHERE IdU = OLD.IdU;
-END$$
+    END$$
 
-=======
->>>>>>> main
-DELIMITER ;
+    DELIMITER ;
 
 
 DELIMITER $$
 
-<<<<<<< HEAD
 -- --------------------------------------------------------
 -- Trigger qui supprime les associations de tâches à un utilisateur retiré d'un projet
 -- --------------------------------------------------------
-=======
-CREATE TRIGGER prevent_invalid_task_assignment
-BEFORE INSERT ON sprintbacklog
-FOR EACH ROW
-BEGIN
-  DECLARE team_id_of_user SMALLINT;
-
-  -- Récupère le team ID de l'utilisateur assigné à la tache
-  SELECT IdEq INTO team_id_of_user
-  FROM utilisateurs
-  WHERE IdU = NEW.IdU;
->>>>>>> main
 
 CREATE TRIGGER before_delete_role_from_project
     BEFORE DELETE ON rolesutilisateurprojet
-    FOR EACH ROW
+FOR EACH ROW
 BEGIN
     DELETE FROM sprintbacklog
     WHERE IdU = OLD.IdU
-      AND IdT IN (
-        SELECT IdT
-        FROM taches
-        WHERE IdP = OLD.IdP
+    AND IdT IN (
+       SELECT IdT
+       FROM taches
+       WHERE IdP = OLD.IdP
     );
 END$$
-
-DELIMITER $$
-
-CREATE FUNCTION getIdRole(role VARCHAR(50))
-    RETURNS INT
-    DETERMINISTIC
-BEGIN
-    DECLARE roleId INT;
-
-    IF role IN ('Scrum Master', 'Product Owner', 'Member') THEN
-        SELECT IdR
-        INTO roleId
-        FROM ftat.roles
-        WHERE DescR = role;
-
-        RETURN roleId;
-    ELSE
-        RETURN -1;
-    END IF;
-END $$
-
 DELIMITER ;
-COMMIT;
-=======
-DELIMITER ;
-
 COMMIT;
