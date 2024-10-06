@@ -265,10 +265,10 @@ function getProjetsFromUserAndIDProjets($id_user, $id_projet) {
             $stmt->bindParam(':id_projet', $id_projet);
             $stmt->execute();
 
-            $projects = $stmt->fetch(PDO::FETCH_ASSOC);
+            $project = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($projects) {
-                return $projects;
+            if ($project) {
+                return $project;
             } else {
                 return null;
             }

@@ -1,26 +1,13 @@
 <?php
-include "./includes/connexionBDD.php";
-
 // Utilisateur connecté
 $id_user = $_SESSION['user_id'];
 
 // Projets dont l'utilisateur fait partie 
-$projets = getProjetsFromUserAndIDProjets($id_user, $_GET['id']);
-
+$projet = getProjetsFromUserAndIDProjets($id_user, $_GET['id']);
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Utilisateur</title>
-</head>
-<body>
-
-<?php if ($projets): ?>
+<?php if ($projet): ?>
     <!-- Pour chaque projet auquel l'utilisateur participe -->
-    <?php foreach ($projets as $projet): ?>
         <div class="projet">
             <h2>Projet : <?php echo $projet['NomP']; ?></h2>
 
@@ -112,10 +99,6 @@ $projets = getProjetsFromUserAndIDProjets($id_user, $_GET['id']);
                 <?php endif; ?>
             </table>
         </div>
-    <?php endforeach; ?>
 <?php else: ?>
     <p>Aucun projet assigné à cet utilisateur.</p>
 <?php endif; ?>
-
-</body>
-</html>

@@ -60,7 +60,6 @@ if (isset($bdd)) {
                         <th>Spécialité</th>
                         <th>Rôle</th>
                         <th>Tâches</th>
-                        <th>Modifier utilisateur</th>
                     </tr>
                     <!-- Contenu du tableau membres -->
                     <?php if (isset($membres) && $membres): ?>
@@ -114,11 +113,6 @@ if (isset($bdd)) {
                                         </form>
                                     <?php endif; endif;
                                 }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-
                                 ?>
                             </td>
                         </tr>
