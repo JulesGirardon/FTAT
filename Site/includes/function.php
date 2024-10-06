@@ -947,11 +947,7 @@ function isInATeamInProjet($id_user, $id_projet) {
     
     if (isset($bdd, $id_user, $id_projet)) {
         try {
-            $sql = "SELECT COUNT(*) 
-                    FROM membre_equipe 
-                    JOIN equipesprj ON membre_equipe.IdEq = equipesprj.IdEq 
-                    JOIN projets ON projets.IdP = equipesprj.IdP 
-                    WHERE membre_equipe.IdU = :id_user AND equipesprj.IdP = :id_projet";
+            $sql = "SELECT COUNT(*) FROM membre_equipe JOIN equipesprj ON membre_equipe.IdEq = equipesprj.IdEq JOIN projets ON projets.IdP = equipesprj.IdP WHERE membre_equipe.IdU = :id_user AND equipesprj.IdP = :id_projet";
                     
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_user', $id_user);
@@ -963,10 +959,10 @@ function isInATeamInProjet($id_user, $id_projet) {
             return $count > 0; 
             
         } catch (PDOException $e) {
-            return null;
+            return false;
         }
     }
-    return null;
+    return false;
 }
 
 

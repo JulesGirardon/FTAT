@@ -454,15 +454,12 @@ if (isset($bdd)) {
             </table>
         </div>
 
-        <?php
-            foreach($equipes as $equipe)
-        ?>
             <?php if (isset($equipes) && isInATeamInProjet($_SESSION['user_id'],$id_projet)): ?>
                 <div class="form-add-bac-projet">
                     <form id="ideeForm" action="./process/add_idee_process.php" method="POST">
                         <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
                         <input hidden type="text" name="bac_IdU" value="<?php echo $_SESSION['user_id'] ?>">
-                        <input hidden type="text" name="bac_IdEq" value="<?php echo getEquipeFromUserInProject($_SESSION['user_id'])['IdEq'], $id_projet ?>">
+                        <input hidden type="text" name="bac_IdEq" value="<?php echo getEquipeFromUserInProject($_SESSION['user_id'], $id_projet)['IdEq'] ?>">
 
                         <textarea id="bac_desc" name="bac_desc" placeholder="Description de votre idée" required></textarea>
 
