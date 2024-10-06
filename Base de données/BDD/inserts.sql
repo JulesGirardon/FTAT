@@ -1,30 +1,19 @@
 INSERT INTO `projets` (`IdP`, `NomP`, `DescriptionP`, `DateDebutP`, `DateFinP`)
 VALUES 
-    ('1', 'PMLK', 'Jeu 3D : Hommage à Martin Luther King', '2024-01-01', '2024-06-01'),
-    ('2', 'Stack UnderFlow', 'Site Internet : Blog', '2024-02-01', '2024-07-01'),
-    ('3', 'Event horizon 1 : The first Gabion', 'Jeu 3D : Immersion spaciale partie 1', '2024-03-01', '2024-08-01'),
-    ('4', 'Event horizon 2 : The Last Gabion', 'Jeu 3D : Immersion spaciale partie 2', '2024-03-01', '2024-08-01'),
-    ('5', 'FTAT', 'Site Internet : Application de la Méthode agile', '2024-02-01', '2024-07-01');
+    ('1', 'PMLK', 'Jeu 3D : Hommage à Martin Luther King', '2024-04-01', '2024-07-01'),
+    ('2', 'Stack UnderFlow', 'Site Internet : Blog', '2024-02-01', '2024-03-01'),
+    ('3', 'Event horizon 1', 'Jeu 3D : Immersion spaciale partie 1', '2023-10-01', '2024-12-31'),
+    ('4', 'Event horizon 2 : The Last Gabion', 'Jeu 3D : Immersion spaciale partie 2', '2025-01-01', '2025-08-01'),
+    ('5', 'FTAT', 'Site Internet : Application de la Méthode agile', '2024-09-01', '2024-10-10');
 
 INSERT INTO `equipesprj`(`IdEq`, `NomEqPrj`, `IdP`)
-VALUES 
-    ('1','Flambi Interactive','1'),
-    ('2','Chardon','2'),
-    ('3','JEMLR Team','3'),
-    ('4','JEMLR Team','4'),
-    ('5','JEAAJLR Team','5');
+VALUES
+    ('1','Flamby Interactive','1'),
+    ('2','Ligne 11','2'),
+    ('3','Pesquet Team','3'),
+    ('4','Moon Studio','4'),
+    ('5','Webeco','5');
 
-INSERT INTO `utilisateurs`(`IdU`, `NomU`, `PrenomU`, `mail`, `MotDePasseU`, `SpecialiteU`, `Statut`) 
-VALUES 
-('1','Girardon','Jules','jgirardon@mail.com','123','Développeur','Admin'),
-('2','Charlot','Eudes','echarlot@mail.com','123','Modeleur','Admin'),
-('3','Dumas','Mathieu','mdumas@mail.com','123','Polyvalent','User'),
-('4','DRDB','Emilien','edrdb@mail.com','123','UI','User'),
-('5','Hullot','Johan','jhullot@mail.com','123','Animateur','User'),
-('6','Degironde','Antoine','atoipix@mail.com','123','WebComm','User'),
-('7','Destarac','Antonin','cdetournay@mail.com','123','Polyvalent','User'),
-('8','Vial','Lucas','llumo@mail.com','123','Développeur','User'),
-('9','Haen','Remi','rhaen@mail.com','123','Développeur','User');
 
 INSERT INTO `roles`(`IdR`, `DescR`)
 VALUES
@@ -101,4 +90,3 @@ VALUES
 ('5','7'),
 ('5','8'),
 ('5','9');
-

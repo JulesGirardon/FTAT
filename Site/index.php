@@ -33,6 +33,8 @@ if ($_SESSION['statut'] == 'Admin') {
 $page = isset($_GET['page']) ? $_GET['page'] : null;
 $projectId = isset($_GET['id']) ? $_GET['id'] : null;
 
+
+
 ?>
 
 <!DOCTYPE html>
