@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if(isset($bdd)) {
         try {
-            $sql = "INSERT INTO ftat.sprintbacklog VALUES (:id_task, :id_sprint, :id_user, :id_etat)";
+            $sql = "INSERT INTO ftat.sprintbacklog(IdT, IdS, IdU, IdEtat) VALUES (:id_task, :id_sprint, :id_user, :id_etat)";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_task', $id_task);
             $stmt->bindParam(':id_sprint', $id_sprint);
@@ -22,11 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("location: ../index.php?id=" . $id_projet);
             exit();
         } catch (Exception $e) {
-            echo $e->getMessage();
-            echo $id_task;
-            echo $id_sprint;
-            echo $id_user;
-
+            header('Location: ../fail.php');
+            exit();
         }
     }
 }

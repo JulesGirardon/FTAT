@@ -5,8 +5,7 @@ session_start();
 
 if (!isset($_SESSION['is_logged_in'])) {
     $_SESSION['is_logged_in'] = false;
-}
-else{
+} else{
     if ($_SESSION['is_logged_in'] && isset($bdd)){
         $sql = "SELECT u.Statut FROM ftat.utilisateurs AS u WHERE u.IdU = :userID";
         $stmt = $bdd->prepare($sql);
@@ -33,6 +32,14 @@ if ($_SESSION['statut'] == 'Admin') {
 if (isset($_GET['id'])) {
     $projectId = $_GET['id'];
 }
+
+if (isset($_GET['view']) && $_GET['view'] == 'individual') {
+    $viewIndividualPage = true;
+} else {
+    $viewIndividualPage = false;
+}
+
+global $projectId;
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +49,11 @@ if (isset($_GET['id'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FTAT</title>
         <link rel="stylesheet" href="styles/style.css">
+        <script>
+            function closeIndividualPage() {
+                window.location.href = '?';
+            }
+        </script>
     </head>
 
     <body>
@@ -53,6 +65,14 @@ if (isset($_GET['id'])) {
                     echo $_SESSION['statut'] == 'Admin' ? '
                     <a href="pages/signin.php">Inscrire un utilisateur</a>
                     <a href="pages/create_project.php">Créer un projet</a>' : "";
+
+                    if (isset($_GET['id'])) {
+                        if ($viewIndividualPage) {
+                            echo '<button onclick="closeIndividualPage()">Fermer la page individuelle</button>';
+                        } else {
+                            echo '<a href="?view=individual?id=" >Ma page individuelle</a>';
+                        }
+                    }
                     ?>
                     <a href="pages/logout.php"> Se déconnecter</a>
                 </div>
@@ -87,23 +107,16 @@ if (isset($_GET['id'])) {
                 </ul>
             </aside>
 
-                <?php
-                if (isset($projectId)) {
+            <?php
+                if ($viewIndividualPage) {
+                    include "pages/individual.php?id=" . $projectId;
+                }
+                else if (isset($projectId)) {
                     include "pages/projet.php";
                 } else {
-                    echo "<h2>Veuillez sélectionner un projet pour voir les détails.</h2>";
+                    echo "<h2>Veuillez sélectionner un projet ou accéder à votre page individuelle.</h2>";
                 }
                 ?>
         </div>
     </body>
 </html>
-
-
-<!--
-echo '<p><a href="pages/create_sprint.php"> Créer un sprint</p>';
-            echo '<p><a href="pages/create_task.php"> Créer une tâche</p>';
-            echo '<p><a href="pages/create_sprintbacklog.php"> Créer un sprintbacklog</p>';
-            echo '<p><a href="pages/add_retrospective.php"> Ajouter une rétrospective</p>';
-            echo '<p><a href="pages/add_revue.php"> Ajouter une revue</p>';
--->
-

@@ -1,8 +1,8 @@
 <?php
 
 include "../includes/connexionBDD.php";
-if (isset($_POST['id_sprint'], $_POST['s_revue'], $bdd)) {
 
+if (isset($_POST['id_sprint'], $_POST['s_revue'], $_POST['id_projet'], $bdd)) {
     try {
         $bdd->beginTransaction();
 
@@ -18,8 +18,10 @@ if (isset($_POST['id_sprint'], $_POST['s_revue'], $bdd)) {
         $bdd->commit();
 
     } catch (PDOException $e) {
-        echo 'Erreur : ' . $e->getMessage();
+        $bdd->rollBack();
+        header('Location: ../fail.php');
+        exit();
     }
 
-    header('Location: ../pages/add_revue.php');
+    header('Location: ../index.php?id=' . $_POST['id_projet']);
 }

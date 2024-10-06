@@ -2,5 +2,13 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/Base de données/BDD/ftat.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Base de données/BDD/function.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/includes/function.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/pages/projet.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/add_idee_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/add_retrospective_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/add_revue_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/add_user_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/assign_task_process.php" dialect="MariaDB" />
   </component>
 </project>
