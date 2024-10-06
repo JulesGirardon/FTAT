@@ -645,3 +645,56 @@ function calculVelocite($id_sprint){
         return;
     }
 }
+
+function getEquipeFromUserInProject($idUser, $idProjet) {
+    global $bdd;
+    try {
+        $sql = "
+            SELECT e.*
+            FROM equipes_projets AS ep
+            JOIN equipes AS e ON ep.IdEq = e.IdEq
+            JOIN utilisateurs_equipes AS ue ON e.IdEq = ue.IdEq
+            WHERE ue.IdU = :idUser
+            AND ep.IdP = :idProjet
+        ";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+        $stmt->bindParam(':idProjet', $idProjet, PDO::PARAM_INT);
+        $stmt->execute();
+        $equipe = $stmt->fetch();
+
+        if ($equipe) {
+            return $equipe;
+        } else {
+            return null;
+        }
+    } catch (PDOException $e) {
+        return null;
+    }
+}
+
+
+function getMembresFromEquipe($idEquipe) {
+    global $bdd;
+    try {
+        $sql = "
+            SELECT u.*
+            FROM utilisateurs_equipes AS ue
+            JOIN utilisateurs AS u ON ue.IdU = u.IdU
+            WHERE ue.IdEq = :idEquipe
+        ";
+        $stmt = $bdd->prepare($sql);
+        $stmt->bindParam(':idEquipe', $idEquipe);
+        $stmt->execute();
+        $membres = $stmt->fetchAll();
+
+        if ($membres) {
+            return $membres;
+        } else {
+            return null;
+        }
+    } catch (PDOException $e) {
+        return null;
+    }
+}
+
