@@ -64,6 +64,7 @@ if (isset($bdd)) {
                         <th>Spécialité</th>
                         <th>Rôle</th>
                         <th>Tâches</th>
+                        <th>Equipe</th>
                     </tr>
                     <!-- Contenu du tableau membres -->
                     <?php if (isset($membres) && $membres): ?>
@@ -97,11 +98,11 @@ if (isset($bdd)) {
                                         ?>
                                         <?php 
                                             $tasks = getNoAssignedTaskInProject($projet['IdP']); 
-                                            $sprint_a = getActiveSprintOfTeam(getEquipeFromUserInProject($membre['IdU'], $projet['IdP']));
+                                            $sprint_a_team = getActiveSprintOfTeam(getEquipeFromUserInProject($membre['IdU'], $projet['IdP'])['IdEq']);
                                         ?>
-                                        <?php if ($tasks && isset($sprint_a)): ?>
+                                        <?php if ($tasks && isset($sprint_a_team)): ?>
                                         <form action="./process/assign_task_process.php" method="POST">
-                                        <input type="hidden" name="id_sprint" value="<?php echo $sprint_a['IdS']; ?>">
+                                        <input type="hidden" name="id_sprint" value="<?php echo $sprint_a_team['IdS']; ?>">
                                             <input type="hidden" name="id_user" value="<?php echo $membre['IdU']; ?>">
                                             <input type="hidden" name="id_projet" value="<?php echo $id_projet; ?>">
 
@@ -120,6 +121,17 @@ if (isset($bdd)) {
                                         </form>
                                     <?php endif; endif;
                                 }
+                                ?>
+                            </td>
+
+                            <td>
+                                <?php
+                                    $team = getEquipeFromUserInProject($membre['IdU'], $projet['IdP']);
+                                    if (isset($team) && $team){
+                                        echo $team['NomEqPrj'];
+                                    }else{
+                                        echo "L'utilisateur ne fait partie d'aucune équipe";
+                                    }
                                 ?>
                             </td>
                         </tr>

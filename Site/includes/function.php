@@ -480,16 +480,15 @@ function getSprintsFromProject($id_projet) {
         }
     }
 }
+
 function getActiveSprintOfTeam($id_team) {
     include "connexionBDD.php";
 
-    if(isset($bdd, $id_team)) {
-        try{
-            $sql = "SELECT sprints.* FROM ftat.sprints WHERE :current_date BETWEEN sprints.DateDebS AND sprints.DateFinS AND sprints.IdEq = :id_team";
+    if (isset($bdd, $id_team)) {
+        try {
+            $sql = "SELECT * FROM ftat.sprints WHERE CURDATE() BETWEEN sprints.DateDebS AND sprints.DateFinS AND sprints.IdEq = :id_team";
             $stmt = $bdd->prepare($sql);
 
-            $current_date = date('Y-m-d');
-            $stmt->bindParam(':current_date', $current_date);
             $stmt->bindParam(':id_team', $id_team, PDO::PARAM_INT);
 
             $stmt->execute();
@@ -498,11 +497,12 @@ function getActiveSprintOfTeam($id_team) {
 
             return $sprint ? $sprint : null;
 
-        } catch (PDOException $e){
+        } catch (PDOException $e) {
             return null;
         }
     }
 }
+
 
 function getNoAssignedTaskInProject($id_projet){
     include 'connexionBDD.php';
