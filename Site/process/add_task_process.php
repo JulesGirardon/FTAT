@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             header("location: ../index.php?id=" . $id_projet);
             exit();
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             echo $e->getMessage();
             header("location : ../index.php?id=" . $id_projet . "?error=error");
             exit();

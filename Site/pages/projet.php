@@ -33,14 +33,18 @@ if (isset($bdd)) {
     $sprints = getSprintsFromProject($id_projet);
 //equipes du projet
     $equipes = getTeamsOfProject($id_projet);
+//Idée du bac a sable
+    $bacs = getBacOfProject($id_projet);
 //sprint actif du projet
     $sprints_actifs = [];  //Tableau de tableau
-    foreach ($equipes as $equipe){
-        $sprints_actifs[] = getActiveSprintOfTeam($equipe['IdEq']);
+    if (isset($equipes)){
+        foreach ($equipes as $equipe){
+            $sprint_a = getActiveSprintOfTeam($equipe['IdEq']);
+            if (isset($sprint_a)){
+                $sprints_actifs[] = $sprint_a;
+            }
+        }
     }
-
-    $bacs = getBacOfProject($id_projet);;
-
 }
 ?>
 
@@ -428,7 +432,7 @@ if (isset($bdd)) {
                     <th>Equipe</th>
                 </tr>
 
-                <?php if (isset($bacs)): ?>
+                <?php if (isset($bacs)):?>
                     <?php foreach ($bacs as $bac): ?>
                         <tr>
                             <td><?php echo "Idée #" . $bac['Id_Idee_bas']; ?></td>
@@ -450,16 +454,144 @@ if (isset($bdd)) {
             </table>
         </div>
 
+        <?php
+            foreach($equipes as $equipe)
+        ?>
+            <?php if (isset($equipes) && isInATeamInProjet($_SESSION['user_id'],$id_projet)): ?>
+                <div class="form-add-bac-projet">
+                    <form id="ideeForm" action="./process/add_idee_process.php" method="POST">
+                        <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
+                        <input hidden type="text" name="bac_IdU" value="<?php echo $_SESSION['user_id'] ?>">
+                        <input hidden type="text" name="bac_IdEq" value="<?php echo getEquipeFromUserInProject($_SESSION['user_id'])['IdEq'], $id_projet ?>">
+
+                        <textarea id="bac_desc" name="bac_desc" placeholder="Description de votre idée" required></textarea>
+
+                        <button type="submit">Ajouter l'idée</button>
+                    </form>
+                </div>
+            <?php else: echo "Vous devez être dans une équipe pour ajouter une idée"; endif;?>
+
+
+</div>
+
+<div class="projet-bac">
+        <div class="projet-element">
+            <h2>Equipes</h2>
+        </div>
+
+        <div class="projet-list-bac">
+            <table border="1" cellpadding="5">
+                <tr>
+                    <th>Nom</th>
+                    <th>Sprint actif</th>
+                    <th>Membre</th>
+                    <th>Modifier l'équipe</th>
+                </tr>
+
+                <?php if (isset($equipes)): ?>
+                    <?php foreach ($equipes as $equipe): ?>
+                        <tr>
+                            <td>
+                                <?php echo $equipe['NomEqPrj'];?>
+                            </td>
+                            <td>
+                                <?php
+                                    $sprint_a = getActiveSprintOfTeam($equipe['IdEq']);
+                                    if (isset($sprint_a)){
+                                        echo "Sprint#" . getActiveSprintOfTeam($equipe['IdEq'])['IdS']; 
+                                    } else{
+                                        echo "Pas de sprint actif";
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                $membres_in_team =  getMembresFromEquipe($equipe['IdEq']);
+                                if (isset($membres_in_team)){
+                                    foreach($membres_in_team as $membre){
+                                        echo $membre['PrenomU'] . $membre['NomU'];
+                                    }
+                                }else{
+                                    echo "Aucun utilisateur ne fait partie de cette équipe";
+                                }
+                                ?>
+
+                                <form id="addMemberTeamProcess" action="./process/add_member_to_team_process.php" method="POST">
+                                    <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
+                                    <input hidden type="text" name="id_equipe" value="<?php echo $equipe['IdEq'] ?>">
+
+                                    <div style="display: flex; align-items: center;">
+                                        <select id="id_user" name="id_user" required>
+                                            <option value="">--Ajouter un utilisateur--</option>
+                                            <?php if(isset($membres)):?>
+                                                <?php foreach($membres as $membre):?>
+                                                    <?php if (!isInTeam($membre['IdU'],$equipe['IdEq'])): ?>
+                                                        <option value="<?php echo $membre['IdU'] ?>">
+                                                            <?php echo $membre['PrenomU'] . $membre['NomU']; ?>
+                                                        </option>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                        <button type="submit">Valider</button>
+                                    </div>
+                                </form>
+                            </td>
+                            
+                            <td>
+                                <form id="modTeamName" action="./process/update_team_name_process.php" method="POST">
+                                    <input hidden type="text" name="id_equipe" value="<?php echo $equipe['IdEq'] ?>">
+                                    <input hidden type="text" name="old_team_name" value="<?php echo $equipe['NomEqPrj'] ?>">
+
+                                    <div style="display: flex; align-items: center;">
+                                        <input type="text" name="new_team_name" placeholder="Modifier le nom de l'équipe">
+                                        <button type="submit">Valider</button>
+                                    </div>
+                                </form>
+
+                                <form id="remTeamMember" action = "./process/remove_team_member_process.php" method="POST">
+                                    <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
+                                    <input hidden type="text" name="id_equipe" value="<?php echo $equipe['IdEq'] ?>">
+
+                                    <div style="display: flex; align-items: center;">
+                                        <select id="id_user" name="id_user" required>
+                                            <option value="">--Selectionner un utilisateur--</option>
+                                            <?php foreach($membres as $membre):?>
+                                                <?php if (isInTeam($membre['IdU'],$equipe['IdEq'])): ?>
+                                                    <option value="<?php echo $membre['IdU']?>"><?php echo $membre['PrenomU'] . $membre['NomU'] ?> </option>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                        <button type="submit">Valider</button>
+                                    </div>
+                                </form>
+                                
+
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4">Aucune équipe n'a été crée pour ce projet</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+
+            <?php if(isset($_SESSION['error']) && $_SESSION['error'] = "same_team_name"): ?>
+                <p style="color:red">Entrez un nom d'équipe différent</p>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Ajouter une équipe -->
         <?php if (isset($is_scrum_master) && $is_scrum_master):?>
         <div class="form-add-bac-projet">
-            <form id="ideeForm" action="./process/add_idee_process.php" method="POST">
+            <form id="equipeForm" action="./process/add_team_process.php" method="POST">
                 <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
-                <input hidden type="text" name="bac_IdU" value="<?php echo $_SESSION['user_id'] ?>">
-                <input hidden type="text" name="bac_IdEq" value="<?php echo getEquipeFromUser($_SESSION['user_id'])['IdEq'] ?>">
 
-                <textarea id="bac_desc" name="bac_desc" placeholder="Description de votre idée" required></textarea>
+                <input id="team_name" name="team_name" placeholder="Nom de l'équipe" required></textarea>
 
-                <button type="submit">Ajouter l'idée</button>
+                <button type="submit">Ajouter l'équipe</button>
             </form>
         </div>
         <?php endif; ?>

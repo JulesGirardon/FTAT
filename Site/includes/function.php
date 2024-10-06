@@ -676,7 +676,7 @@ function getBacOfProject($id_projet){
 
     if(isset($bdd, $id_projet)) {
         try {
-            $sql = "SELECT * FROM ftat.idees_bac_a_sable AS bac JOIN ftat.equipesprj AS epj ON epj.IdEq = bac.IdEq WHERE epj.IdP = :id_projet";
+            $sql = "SELECT * FROM idees_bac_a_sable JOIN equipesprj ON idees_bac_a_sable.IdEq = equipesprj.IdEq WHERE equipesprj.IdP = :id_projet";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_projet', $id_projet);
             $stmt->execute();
@@ -686,7 +686,10 @@ function getBacOfProject($id_projet){
 
         } catch (PDOException $e){
             echo $e->getMessage();
+            return $e;
         }
+    } else{
+        return "prout";
     }
 }
 
@@ -883,7 +886,6 @@ function getEquipeFromUserInProject($idUser, $idProjet) {
     }
 }
 
-
 function getMembresFromEquipe($idEquipe) {
     include 'connexionBDD.php';
 
@@ -937,5 +939,61 @@ function getPourcentageProjet($id_projet) {
         } catch (PDOException $e) {
             return null;
         }
+    }
+}
+
+function isInATeamInProjet($id_user, $id_projet) {
+    include 'connexionBDD.php';
+    
+    if (isset($bdd, $id_user, $id_projet)) {
+        try {
+            $sql = "SELECT COUNT(*) 
+                    FROM membre_equipe 
+                    JOIN equipesprj ON membre_equipe.IdEq = equipesprj.IdEq 
+                    JOIN projets ON projets.IdP = equipesprj.IdP 
+                    WHERE membre_equipe.IdU = :id_user AND equipesprj.IdP = :id_projet";
+                    
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':id_projet', $id_projet);
+            $stmt->execute();
+
+            $count = $stmt->fetchColumn();
+
+            return $count > 0; 
+            
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+
+function isInTeam($id_user,$id_equipe){
+    include 'connexionBDD.php';
+
+
+    if ($bdd || isset($id_user, $id_equipe)) {
+        try{
+            $sql = "SELECT COUNT(*) FROM membre_equipe WHERE membre_equipe.IdU = :id_user AND membre_equipe.IdEq = :id_equipe";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':id_equipe', $id_equipe);
+            $stmt->execute();
+
+            $count = $stmt->fetchColumn();
+            if ($count > 0){
+                return true;
+            } else{
+                return false;
+            }
+
+        
+        } catch(PDOException $e){
+            return null;
+        }
+    } else{
+        return null;
     }
 }
