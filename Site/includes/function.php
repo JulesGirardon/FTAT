@@ -46,6 +46,26 @@ function getProjectWhereScrumMaster($IdU) {
     return null;
 }
 
+function getIdTeamFromProject($IdP) {
+    include "../includes/connexionBDD.php";
+
+    try {
+        if (isset($IdP) && isset($bdd)){
+            $sql = "SELECT e.IdEq
+                FROM ftat.equipesprj AS e
+                JOIN ftat.projets AS p ON p.IdEq = e.IdEq
+                WHERE p.IdP = :IdP";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdP', $IdP);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC)['IdEq'];
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return null;
+}
+
 function getEquipeFromUser($id_user){
     include 'connexionBDD.php';
     try {
@@ -880,6 +900,40 @@ function getMembresFromEquipe($idEquipe) {
             } else {
                 return null;
             }
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+}
+
+function getPourcentageProjet($id_projet) {
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $id_projet)) {
+        try {
+            $sql = "SELECT * FROM ftat.taches AS t WHERE t.IdP = :IdP";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdP', $id_projet);
+            $stmt->execute();
+            $taches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $total_tache = count($taches);
+
+            $tache_fini_sql = "SELECT * FROM ftat.sprintbacklog AS sb JOIN ftat.taches AS t ON t.IdT = sb.IdT WHERE sb.IdEtat = 5 AND t.IdP = :IdP";
+            $stmt = $bdd->prepare($tache_fini_sql);
+            $stmt->bindParam(':IdP', $id_projet);
+            $stmt->execute();
+            $taches_fini = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $total_tache_fini = count($taches_fini);
+
+            if ($total_tache_fini != 0) {
+                return ($total_tache_fini / $total_tache) * 100;
+            } else {
+                return 0;
+            }
+
+
         } catch (PDOException $e) {
             return null;
         }

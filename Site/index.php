@@ -86,9 +86,9 @@ $projectId = isset($_GET['id']) ? $_GET['id'] : null;
                             <a href="?id=<?php echo $projet['IdP']; ?>">
                                 <?php
                                 if ($_SESSION['statut'] == 'Admin') {
-                                    echo $projet['NomP'] . " (" . $projet['PrenomU'] . " " . $projet['NomU'] . ")";
+                                    echo $projet['NomP'] . " (" . $projet['PrenomU'] . " " . $projet['NomU'] . ") (" . round(getPourcentageProjet($projet['IdP'])) . "%)";
                                 } else if ($_SESSION['statut'] == 'User') {
-                                    echo $projet['NomP'] . " (" . $projet['DescR'] . ")";
+                                    echo $projet['NomP'] . " (" . $projet['DescR'] . ") (" . round(getPourcentageProjet($projet['IdP'])) . "%)";
                                 }
                                 ?>
                             </a>

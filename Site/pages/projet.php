@@ -243,7 +243,7 @@ if (isset($bdd)) {
             </table>
         </div>
 
-        <?php if (isset($is_scrum_master, $is_product_owner) && $is_scrum_master || $is_product_owner): ?>
+        <?php if (isset($is_scrum_master,$is_product_owner) && ($is_scrum_master || $is_product_owner)): ?>
         <div class="form-add-tache-projet">
             <!-- Ajouter une tâche au projet -->
             <form action="./process/add_task_process.php" method="POST">
