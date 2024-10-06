@@ -94,13 +94,14 @@ if (isset($bdd)) {
                                         }
                                     } else {
                                         echo "Aucune tâche assignée ";
+                                    }
                                         if (isset($is_scrum_master) && $is_scrum_master):
                                         ?>
                                         <?php 
                                             $tasks = getNoAssignedTaskInProject($projet['IdP']); 
-                                            $sprint_a_team = getActiveSprintOfTeam(getEquipeFromUserInProject($membre['IdU'], $projet['IdP'])['IdEq']);
+                                            $sprint_a_team = $tasks ? getActiveSprintOfTeam(getEquipeFromUserInProject($membre['IdU'], $projet['IdP'])['IdEq']) : null;
                                         ?>
-                                        <?php if ($tasks && isset($sprint_a_team)): ?>
+                                        <?php if ($tasks && isset($sprint_a_team) && $sprint_a_team): ?>
                                         <form action="./process/assign_task_process.php" method="POST">
                                         <input type="hidden" name="id_sprint" value="<?php echo $sprint_a_team['IdS']; ?>">
                                             <input type="hidden" name="id_user" value="<?php echo $membre['IdU']; ?>">
@@ -120,7 +121,7 @@ if (isset($bdd)) {
                                             </div>
                                         </form>
                                     <?php endif; endif;
-                                }
+
                                 ?>
                             </td>
 
@@ -521,7 +522,7 @@ if (isset($bdd)) {
                                 $membres_in_team =  getMembresFromEquipe($equipe['IdEq']);
                                 if (isset($membres_in_team)){
                                     foreach($membres_in_team as $membre){
-                                        echo $membre['PrenomU'] . $membre['NomU'] . '<br>';
+                                        echo $membre['PrenomU'] . ' ' . $membre['NomU'] . '<br>';
                                     }
                                 }else{
                                     echo "Aucun utilisateur ne fait partie de cette équipe";
@@ -539,7 +540,7 @@ if (isset($bdd)) {
                                                 <?php foreach($membres as $membre):?>
                                                     <?php if (!isInTeam($membre['IdU'],$equipe['IdEq'])): ?>
                                                         <option value="<?php echo $membre['IdU'] ?>">
-                                                            <?php echo $membre['PrenomU'] . $membre['NomU']; ?>
+                                                            <?php echo $membre['PrenomU'] . ' ' . $membre['NomU']; ?>
                                                         </option>
                                                     <?php endif; ?>
                                                 <?php endforeach; ?>
@@ -570,7 +571,7 @@ if (isset($bdd)) {
                                             <option value="">--Selectionner un utilisateur--</option>
                                             <?php foreach($membres as $membre):?>
                                                 <?php if (isInTeam($membre['IdU'],$equipe['IdEq'])): ?>
-                                                    <option value="<?php echo $membre['IdU']?>"><?php echo $membre['PrenomU'] . $membre['NomU'] ?> </option>
+                                                    <option value="<?php echo $membre['IdU']?>"><?php echo $membre['PrenomU'] . ' ' . $membre['NomU'] ?> </option>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>
                                         </select>
