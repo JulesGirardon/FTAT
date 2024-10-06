@@ -25,11 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (Exception $e) {
             if (strpos($e->getMessage(), 'Un autre sprint est déjà actif') !== false) {
                 $_SESSION['error'] = "dateSprint";
-                header("Location: ../index..php?id=" . $id_projet);
+                header("Location: ../index.php?id=" . $id_projet);
                 exit();
             } else {
                 echo $e->getMessage();
-                header("Location: ../index..php?id=" . $id_projet);
+                header("Location: ../index.php?id=" . $id_projet);
                 exit();
             }
         }

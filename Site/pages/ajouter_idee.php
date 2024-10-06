@@ -8,7 +8,7 @@
 
 <div>
     <h2>Ajouter une Idée au Bac à Sable</h2>
-    <form method="POST" action="../process/ajouter_idee_process.php">
+    <form method="POST" action="../process/add_idee_process.php">
         <div class="Desc">
             <label for="desc_Idee_bas" class="form-label">Description de l'idée</label>
             <textarea class="form-control" id="desc_Idee_bas" name="desc_Idee_bas" required></textarea>

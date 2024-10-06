@@ -45,38 +45,19 @@ function getProjectWhereScrumMaster($IdU) {
 
     return null;
 }
-function getIdTeamFromProject($IdP) {
-    include "../includes/connexionBDD.php";
-
-    try {
-        if (isset($IdP) && isset($bdd)){
-            $sql = "SELECT e.IdEq
-                FROM ftat.equipesprj AS e
-                JOIN ftat.projets AS p ON p.IdEq = e.IdEq
-                WHERE p.IdP = :IdP";
-            $stmt = $bdd->prepare($sql);
-            $stmt->bindParam(':IdP', $IdP);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC)['IdEq'];
-        }
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-    return null;
-}
 
 function getEquipeFromUser($id_user){
     include 'connexionBDD.php';
     try {
         if (isset($bdd)) {
-            $sql = "SELECT ftat.membre_equipe.IdEq FROM ftat.membre_equipe WHERE ftat.membre_equipe.IdU = :id_user";
+            $sql = "SELECT me.IdEq FROM ftat.membre_equipe AS me WHERE me.IdU = :id_user";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_user', $id_user);
             $stmt->execute();
             $id = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($id && isset($id['IdEq'])) {
-                return $id['IdEq'];
+            if (isset($id)) {
+                return $id;
             } else {
                 return null;
             }
@@ -273,6 +254,30 @@ function getProjetsFromUser($id_user) {
     }
 }
 
+function getProjetsFromUserAndIDProjets($id_user, $id_projet) {
+    include 'connexionBDD.php';
+
+    if (isset($bdd, $id_user, $id_projet)) {
+        try {
+            $sql = "SELECT * FROM ftat.projets JOIN ftat.rolesutilisateurprojet ON projets.IdP = rolesutilisateurprojet.IdP WHERE rolesutilisateurprojet.IdU = :id_user AND projets.IdP = :id_projet";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':id_projet', $id_projet);
+            $stmt->execute();
+
+            $project = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($project) {
+                return $project;
+            } else {
+                return null;
+            }
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+}
+
 function getMembresFromProjet($id_projet){
     include 'connexionBDD.php';
 
@@ -438,7 +443,7 @@ function getSprintsFromProject($id_projet) {
 
     if(isset($bdd, $id_projet)) {
         try{
-            $sql = "SELECT * FROM ftat.sprints WHERE IdEq = (SELECT IdEq FROM ftat.projets WHERE IdP = :id_projet)";
+            $sql = "SELECT * FROM ftat.sprints AS s WHERE s.IdEq IN (SELECT IdEq FROM ftat.equipesprj AS eqp WHERE eqp.IdP = :id_projet)";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_projet', $id_projet, PDO::PARAM_INT);
             $stmt->execute();
@@ -456,7 +461,7 @@ function getSprintsFromProject($id_projet) {
     }
 }
 function getActiveSprintOfTeam($id_team) {
-    include "./includes/connexionBDD.php";
+    include "connexionBDD.php";
 
     if(isset($bdd, $id_team)) {
         try{
@@ -642,6 +647,241 @@ function calculVelocite($id_sprint){
         $stmt->bindParam(':velocite',$velocite);
         $stmt->execute();
 
-        return;
+        return 0;
+    }
+}
+
+function getBacOfProject($id_projet){
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $id_projet)) {
+        try {
+            $sql = "SELECT * FROM ftat.idees_bac_a_sable AS bac JOIN ftat.equipesprj AS epj ON epj.IdEq = bac.IdEq WHERE epj.IdP = :id_projet";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_projet', $id_projet);
+            $stmt->execute();
+            $bac = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $bac ? $bac : null;
+
+        } catch (PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+}
+
+function getUserFromId($IdU) {
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $IdU)) {
+        try {
+            $sql = "SELECT * FROM ftat.utilisateurs AS u WHERE u.IdU = :IdU";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdU', $IdU);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $user ? $user : null;
+
+        } catch (PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+}
+
+function getEquipeFromId($IdEq) {
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $IdEq)) {
+        try {
+            $sql = "SELECT * FROM ftat.equipesprj AS epj WHERE epj.IdEq = :IdEq";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdEq', $IdEq);
+            $stmt->execute();
+            $equipe = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $equipe ? $equipe : null;
+
+        } catch (PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+}
+
+function getEquipeFromIdSprint($id_sprint) {
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $id_sprint)) {
+        try {
+            $sql = "SELECT * FROM ftat.equipesprj AS epj JOIN ftat.sprints AS s ON s.IdEq = epj.IdEq WHERE s.IdS = :IdS";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdS', $id_sprint);
+            $stmt->execute();
+            $equipe = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $equipe ? $equipe : null;
+
+        } catch (PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+}
+
+function displayAllTasks($currPrj)
+{
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $currPrj)) {
+        try {
+            $stmt = $bdd->prepare("CALL getAllTasks(:project_id)");
+            $stmt->bindParam(':project_id', $currPrj);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $results;
+        } catch (PDOException $e) {
+            echo "Erreur de base de données : " . $e->getMessage();
+            exit;
+        }
+    }
+}
+
+function displayAllVotes($currPrj)
+{
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $currPrj)) {
+        try {
+            $stmt = $bdd->prepare("CALL getAllVotes(:project_id)");
+            $stmt->bindParam(':project_id', $currPrj);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erreur de base de données : " . $e->getMessage();
+            exit;
+        }
+    }
+}
+
+function insertCout($idU, $idT, $commentaire, $coutMt)
+{
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $idU, $idT, $commentaire, $coutMt)) {
+        try {
+            $stmt = $bdd->prepare("SELECT insertCoutMembreTache(:idU, :idT, :commentaire, :coutMt)");
+            $stmt->bindParam(':idU', $idU);
+            $stmt->bindParam(':idT', $idT);
+            $stmt->bindParam(':commentaire', $commentaire);
+            $stmt->bindParam(':coutMt', $coutMt);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Erreur de base de données : " . $e->getMessage();
+            exit;
+        }
+    }
+}
+
+function displayAllDifficulties()
+{
+    include 'connexionBDD.php';
+
+    if(isset($bdd)) {
+        try {
+            $stmt = $bdd->prepare("CALL displayAllDifficulties()");
+            $stmt->execute();
+            $difficulties = [];
+
+            if ($stmt->rowCount() > 0) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $difficulties[] = $row;
+                }
+            }
+            $stmt->closeCursor();
+            return $difficulties;
+        } catch (PDOException $e) {
+            echo "Erreur de base de données : " . $e->getMessage();
+            exit;
+        }
+    }
+}
+function insertCoutScrum($idT, $cout)
+{
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $idT, $cout)) {
+        try {
+            $stmt = $bdd->prepare("SELECT insertCoutTache(:idT, :cout, :bool)");
+            $stmt->bindParam(':idT', $idT);
+            $stmt->bindParam(':cout', $cout);
+            $stmt->bindValue(':bool', 1);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Erreur de base de données : " . $e->getMessage();
+            exit;
+        }
+    }
+
+}
+
+function displayAllComments($task_id)
+{
+   include 'connexionBDD.php';
+
+   if(isset($bdd, $task_id)) {
+       try {
+           $stmt = $bdd->prepare("CALL getAllComments(:task_id)");
+           $stmt->bindParam(':task_id', $task_id);
+           $stmt->execute();
+           return $stmt->fetchAll(PDO::FETCH_ASSOC);
+       } catch (PDOException $e) {
+           echo "Erreur de base de données : " . $e->getMessage();
+           exit;
+       }
+   }
+}
+
+function getEquipeFromUserInProject($idUser, $idProjet) {
+    include 'connexionBDD.php';
+
+    if (isset($bdd, $idUser, $idProjet)) {
+        try {
+            $sql = "SELECT * FROM ftat.equipesprj JOIN ftat.membre_equipe ON equipesprj.IdEq = membre_equipe.IdEq WHERE membre_equipe.IdU = :idUser AND equipesprj.IdP = :idProjet";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+            $stmt->bindParam(':idProjet', $idProjet, PDO::PARAM_INT);
+            $stmt->execute();
+            $equipe = $stmt->fetch();
+
+            if ($equipe) {
+                return $equipe;
+            } else {
+                return null;
+            }
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+}
+
+
+function getMembresFromEquipe($idEquipe) {
+    include 'connexionBDD.php';
+
+    if(isset($bdd, $idEquipe)) {
+        try {
+            $sql = "SELECT * FROM ftat.membre_equipe JOIN ftat.utilisateurs ON membre_equipe.IdU = utilisateurs.IdU WHERE membre_equipe.IdEq = :idEquipe";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':idEquipe', $idEquipe);
+            $stmt->execute();
+            $membres = $stmt->fetchAll();
+
+            if ($membres) {
+                return $membres;
+            } else {
+                return null;
+            }
+        } catch (PDOException $e) {
+            return null;
+        }
     }
 }

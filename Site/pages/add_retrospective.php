@@ -63,11 +63,7 @@ $action = null;
                             <option value="">-- Sélectionner un sprint --</option>
                             <?php
                             if (isset($bdd)) {
-                                $sql = "SELECT s.IdS, s.DateDebS FROM ftat.sprints AS s WHERE s.IdP = :idProject";
-                                $stmt = $bdd->prepare($sql);
-                                $stmt->bindParam(':idProject', $id_project);
-                                $stmt->execute();
-                                $tab_sprints = $stmt->fetchAll();
+                                $tab_sprints = getSprintsFromProject($id_project);
 
                                 foreach ($tab_sprints as $sprint) {
                                     $selected = ($sprint['IdS'] == $id_sprint) ? "selected" : "";
@@ -81,11 +77,14 @@ $action = null;
             </form>
 
             <div id="addRetro-form">
+
                 <form method="POST" action="../process/add_retrospective_process.php">
                     <input type="hidden" name="project" value="<?php echo $id_project; ?>">
                     <input type="hidden" name="id_sprint" value="<?php echo $id_sprint; ?>">
+                    <input type="hidden" name="id_projet" value="<?php echo $id_project; ?>">
 
                     <div class="form-group">
+                        <label for="s_retro">Equipe : <?php echo getEquipeFromIdSprint($id_sprint)['NomEqPrj'] ?></label>
                         <textarea id="s_retro" name="s_retro" placeholder="Ajouter ou modifier votre rétrospective"><?php
                             $retro = getRetroFromSprint($id_sprint);
                             echo $retro ? $retro : "";

@@ -2,26 +2,28 @@
 include "../includes/connexionBDD.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_user= $_POST['user_id'];
     $id_projet = $_POST['id_projet'];
-    $id_role = $_POST['id_role'];
 
-    if (isset($bdd)) {
+    $task_title = $_POST['task_title'];
+    $task_description =  $_POST['task_description'];
+    $task_priority = $_POST['task_priority'];
+
+    if(isset($bdd)) {
         try {
-            $sql = "INSERT INTO ftat.rolesutilisateurprojet VALUES (:id_user, :id_projet, :id_role)";
+            $sql = "INSERT INTO taches (TitreT, UserStoryT, IdP, CoutT, IdPriorite) VALUES (:titre, :story, :id_projet, '?', :id_prio)";
             $stmt = $bdd->prepare($sql);
-            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':titre', $task_title);
+            $stmt->bindParam(':story', $task_description);
             $stmt->bindParam(':id_projet', $id_projet);
-            $stmt->bindParam(':id_role', $id_role);
+            $stmt->bindParam(':id_prio', $task_priority);
             $stmt->execute();
 
             header("location: ../index.php?id=" . $id_projet);
             exit();
         } catch (Exception $e) {
-            echo 'Erreur : ' . $e->getMessage();
+            echo $e->getMessage();
             header("location : ../index.php?id=" . $id_projet . "?error=error");
             exit();
         }
     }
 }
-

@@ -63,11 +63,7 @@ $action = null;
                             <option value="">-- Sélectionner un sprint --</option>
                             <?php
                             if (isset($bdd)) {
-                                $sql = "SELECT s.IdS, s.DateDebS FROM ftat.sprints AS s WHERE s.IdP = :idProject";
-                                $stmt = $bdd->prepare($sql);
-                                $stmt->bindParam(':idProject', $id_project);
-                                $stmt->execute();
-                                $tab_sprints = $stmt->fetchAll();
+                                $tab_sprints = getSprintsFromProject($id_project);
 
                                 foreach ($tab_sprints as $sprint) {
                                     $selected = ($sprint['IdS'] == $id_sprint) ? "selected" : "";
@@ -82,10 +78,11 @@ $action = null;
 
             <div id="addRevue-form">
                 <form method="POST" action="../process/add_revue_process.php">
-                    <input type="hidden" name="project" value="<?php echo $id_project; ?>">
                     <input type="hidden" name="id_sprint" value="<?php echo $id_sprint; ?>">
+                    <input type="hidden" name="id_projet" value="<?php echo $_POST['project']; ?>">
 
                     <div class="form-group">
+                        <label for="s_revue">Equipe : <?php echo getEquipeFromIdSprint($id_sprint)['NomEqPrj'] ?></label>
                         <textarea id="s_revue" name="s_revue" placeholder="Ajouter ou modifier votre revue"><?php
                             $revue = getRevueFromSprint($id_sprint);
                             echo $revue ? $revue : "";
@@ -99,7 +96,7 @@ $action = null;
                 </form>
             </div>
             <div class="form-group">
-                <a href="../index.php">Revenir à la page d'accueil</a>
+                <a href="../index.php?id= <?php echo $id_project?>">Revenir à la page d'accueil</a>
             </div>
         </main>
     </body>

@@ -41,6 +41,10 @@ main {
     height: 350px;
 }
 
+.planning-poker-user {
+    width: 550px;
+}
+
 
 main h1, main h2 {
     margin: 10px;
@@ -51,6 +55,7 @@ main h1, main h2 {
 .form-group {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .form-group input, .form-group textarea, .projet input, .projet textarea {
@@ -69,7 +74,7 @@ main h1, main h2 {
     padding-top: 5px;
 }
 
-.form-group button, .projet button {
+.form-group button, .projet button, button {
     width: 125px;
     height: 35px;
 
@@ -77,7 +82,7 @@ main h1, main h2 {
     border-radius: 15px;
 }
 
-.form-group button:hover, .projet button:hover {
+.form-group button:hover, .projet button:hover, button:hover {
     background: #BCAB79;
 }
 .form-group select, .projet select {
@@ -236,7 +241,12 @@ aside ul li a:hover {
     border: 2px solid #253031;
 }
 
-.projet-membres, .projet-task, .projet-sprints {
+button a {
+    text-decoration: none;
+    color: #253031;
+}
+
+.projet-membres, .projet-task, .projet-sprints, .projet-bac, .projet-planning-poker-commentaire {
     border: 2px solid #BCAB79;
     border-radius: 15px;
 
@@ -251,7 +261,15 @@ aside ul li a:hover {
     align-items: center;
 }
 
-.form-add-membre-projet, .form-add-tache-projet, .form-add-sprint-projet, .projet-list-membres, .projet-list-taches, .projet-list-sprints {
+.form-add-membre-projet,
+.form-add-tache-projet,
+.form-add-sprint-projet,
+.form-add-bac-projet,
+.projet-list-membres,
+.projet-list-taches,
+.projet-list-sprints,
+.projet-list-bac,
+.projet-planning-poker-commentaire {
     width: 90%;
     margin: 15px;
     padding: 10px;
@@ -263,18 +281,22 @@ aside ul li a:hover {
     align-items: center;
 }
 
-.projet-list-membres, .projet-list-taches, .projet-list-sprints {
+.projet-list-membres, .projet-list-taches, .projet-list-sprints, .projet-list-bac {
     justify-content: center;
 }
 
-.form-add-membre-projet, .form-add-tache-projet, .form-add-sprint-projet {
+.form-add-membre-projet, .form-add-tache-projet, .form-add-sprint-projet, .form-add-bac-projet {
     justify-content: space-around;
 }
 
-.form-add-membre-projet form, .form-add-tache-projet form, .form-add-sprint-projet form {
+.form-add-membre-projet form, .form-add-tache-projet form, .form-add-sprint-projet form, .form-add-bac-projet form {
     width: 100%;
 
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+}
+
+.hidden {
+    display: none;
 }

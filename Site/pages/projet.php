@@ -6,7 +6,8 @@ if (isset($_GET['id'])) {
     echo "Aucun projet sélectionné.";
 }
 
-//projet
+$_SESSION["currPrj"] = isset($id_projet) ? $id_projet : null;
+
 
 if (isset($bdd)) {
     $sql = "SELECT * FROM ftat.projets WHERE IdP = :id_projet";
@@ -16,7 +17,14 @@ if (isset($bdd)) {
     $projet = $stmt->fetch(PDO::FETCH_ASSOC);
     //Role de l'utilisateur consultat la page
     $role = getRoleFromUserInProject($_SESSION['user_id'], $projet['IdP']);
-    $is_scrum_master = $role['DescR'] == "Scrum Master" || $role['DescR'] == "Product Owner";
+    if (!$role && $_SESSION['statut'] != 'Admin') {
+        header("Location: ./index.php");
+
+    } else if ($role) {
+        $is_scrum_master = $role['DescR'] == "Scrum Master";
+        $is_product_owner = $role['DescR'] == "Product Owner";
+    }
+
 //membres du projet
     $membres = getMembresFromProjet($id_projet);
 //taches du projet
@@ -28,8 +36,11 @@ if (isset($bdd)) {
 //sprint actif du projet
     $sprints_actifs = [];  //Tableau de tableau
     foreach ($equipes as $equipe){
-        array_push($sprints_actifs,getActiveSprintOfTeam($equipe['IdEq']));
+        $sprints_actifs[] = getActiveSprintOfTeam($equipe['IdEq']);
     }
+
+    $bacs = getBacOfProject($id_projet);;
+
 }
 ?>
 
@@ -49,7 +60,6 @@ if (isset($bdd)) {
                         <th>Spécialité</th>
                         <th>Rôle</th>
                         <th>Tâches</th>
-                        <th>Modifier utilisateur</th>
                     </tr>
                     <!-- Contenu du tableau membres -->
                     <?php if (isset($membres) && $membres): ?>
@@ -73,18 +83,18 @@ if (isset($bdd)) {
                                 <td>
                                     <?php
                                     $tasks = getTaskFromUserInProject($membre['IdU'], $projet['IdP']);
-                                    if (isset($tasks) && !empty($tasks)){
+                                    if (!empty($tasks)){
                                         foreach ($tasks as $task){
                                             echo "<p>" . $task['TitreT'] . "</p>";
                                         }
                                     } else {
                                         echo "Aucune tâche assignée ";
-                                        if ($is_scrum_master):
+                                        if (isset($is_scrum_master) && $is_scrum_master):
                                         ?>
                                         <?php $tasks = getNoAssignedTaskInProject($projet['IdP']); ?>
                                         <?php if ($tasks): ?>
                                         <form action="./process/assign_task_process.php" method="POST">
-                                            <input type="hidden" name="id_sprint" value="<?php echo getActiveSprintOfTeam(getEquipeFromUser($membre['IdU'])['IdEq'])['IdS']; ?>">
+                                            <input type="hidden" name="id_sprint" value="<?php echo getActiveSprintOfTeam(getEquipeFromUser($membre['IdU']))['IdS']; ?>">
                                             <input type="hidden" name="id_user" value="<?php echo $membre['IdU']; ?>">
                                             <input type="hidden" name="id_projet" value="<?php echo $id_projet; ?>">
 
@@ -100,28 +110,22 @@ if (isset($bdd)) {
                                             <div class="form-group">
                                                 <button type="submit">Assigner la tâche à l'utilisateur</button>
                                             </div>
-
                                         </form>
                                     <?php endif; endif;
                                 }
                                 ?>
                             </td>
-                            <td>
-                                <?php
-
-                                ?>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
-                        <?php else: ?>
-                            <li>
-                                <?php echo isset($message) ? $message : "Aucun projet disponible."; ?>
-                            </li>
-                        <?php endif; ?>
-                    </table>
-        </div>
+                    <?php else: ?>
+                        <li>
+                            <?php echo isset($message) ? $message : "Aucun projet disponible."; ?>
+                        </li>
+                    <?php endif; ?>
+                </table>
+            </div>
 
-        <?php if ($is_scrum_master):
+        <?php if (isset($is_scrum_master) && $is_scrum_master):
             $sql = "SELECT IdU, NomU, PrenomU FROM ftat.utilisateurs";
             $stmt = $bdd->query($sql);
             $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -158,7 +162,7 @@ if (isset($bdd)) {
 
     <div class="projet-task">
         <div class="projet-element">
-            <h2>Tâches</h2>
+            <h2>Product Backlog</h2>
         </div>
 
         <div class="projet-list-taches">
@@ -167,6 +171,7 @@ if (isset($bdd)) {
                 <tr>
                     <th>Tâches</th>
                     <th>Priorité</th>
+                    <th>Coût</th>
                     <th>Utilisateur assigné</th>
                     <th>Statut</th>
                     <th>Sprint</th>
@@ -184,6 +189,11 @@ if (isset($bdd)) {
                             <td>
                                 <?php
                                 echo getPriorityFromTask($tache['IdT']);
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                echo $tache['CoutT'];
                                 ?>
                             </td>
                             <td>
@@ -233,7 +243,7 @@ if (isset($bdd)) {
             </table>
         </div>
 
-        <?php if ($is_scrum_master): ?>
+        <?php if (isset($is_scrum_master, $is_product_owner) && $is_scrum_master || $is_product_owner): ?>
         <div class="form-add-tache-projet">
             <!-- Ajouter une tâche au projet -->
             <form action="./process/add_task_process.php" method="POST">
@@ -242,8 +252,6 @@ if (isset($bdd)) {
                 <input type="text" id="task_title" name="task_title" placeholder="Titre de la tâche" required>
 
                 <textarea id="task_description" name="task_description" placeholder="Description de la tâche :" required></textarea>
-
-                <input type="number" min="0" max="999" id="task_cost" name="task_cost" placeholder="Coût de la tâche" required></textarea>
 
                 <select name="task_priority" id="task_priority" required>
                     <option value="">-- Sélectionner une priorité --</option>
@@ -284,20 +292,16 @@ if (isset($bdd)) {
                 </tr>
 
                 <!-- Contenu du tableau sprints -->
-                <?php if (isset($sprints) && $sprints): ?>
+                <?php if (isset($sprints)): ?>
                     <?php foreach ($sprints as $sprint): ?>
                         <?php
                         $isActive = false;
                         $isNotFinished = false;
                         if (isset($sprints_actifs) && $sprints_actifs) {
-                            foreach ($sprints_actifs as $sprint_array) {
-                                if (is_array($sprint_array) && isset($sprint_array[0])) {
-                                    $sprint_actif = $sprint_array[0];
-
-                                    if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS']) {
-                                        $isActive = true;
-                                        break;
-                                    }
+                            foreach ($sprints_actifs as $sprint_actif) {
+                                if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS']) {
+                                    $isActive = true;
+                                    break;
                                 }
                             }
                         }
@@ -313,6 +317,8 @@ if (isset($bdd)) {
                         } elseif ($isNotFinished) {
                             $backgroundColor = 'red';
                         }
+
+                        $IdS = $sprint['IdS'];
                         ?>
                         <tr style="background-color: <?php echo $backgroundColor; ?>;">
                             <td>
@@ -329,8 +335,14 @@ if (isset($bdd)) {
                                 <?php
                                 if (!$sprint['RetrospectiveS']) {
                                     echo "Veuillez entrer une rétrospective.";
+                                    if((isset($is_scrum_master) && $is_scrum_master) && ($isNotFinished || $isActive)) {
+                                        echo "<form method='POST' action='./pages/add_retrospective.php'><input type='hidden' name='sprint' value='$IdS'><input type='hidden' name='project' value='$id_projet'><button type='submit'>Ajouter</button></form>";
+                                    }
                                 } else {
-                                    echo $sprint['RetrospectiveS'] ? $sprint['RetrospectiveS'] : "Pas de rétrospective";
+                                    echo $sprint['RetrospectiveS'];
+                                    if ($isActive && (isset($is_scrum_master) && $is_scrum_master)) {
+                                        echo "<form method='POST' action='./pages/add_retrospective.php'><input type='hidden' name='sprint' value='$IdS'><input type='hidden' name='project' value='$id_projet'><button type='submit'>Modifier</button></form>";
+                                    }
                                 }
                                 ?>
                             </td>
@@ -338,8 +350,14 @@ if (isset($bdd)) {
                                 <?php
                                 if (!$sprint['RevueDeSprint']) {
                                     echo "Veuillez entrer une revue de sprint.";
+                                    if((isset($is_scrum_master) && $is_scrum_master) && ($isNotFinished || $isActive)) {
+                                        echo "<form method='POST' action='./pages/add_revue.php'><input type='hidden' name='sprint' value='$IdS'><input type='hidden' name='project' value='$id_projet'><button type='submit'>Ajouter</button></form>";
+                                    }
                                 } else {
-                                    echo $sprint['RevueDeSprint'] ? $sprint['RevueDeSprint'] : "Pas de revue";
+                                    echo $sprint['RevueDeSprint'];
+                                    if ($isActive && (isset($is_scrum_master) && $is_scrum_master)) {
+                                        echo "<form method='POST' action='./pages/add_revue.php'><input type='hidden' name='sprint' value='$IdS'><input type='hidden' name='project' value='$id_projet'><button type='submit'>Modifier</button></form>";
+                                    }
                                 }
                                 ?>
 
@@ -360,7 +378,7 @@ if (isset($bdd)) {
             </table>
         </div>
 
-        <?php if ($is_scrum_master):?>
+        <?php if (isset($is_scrum_master) && $is_scrum_master):?>
         <div class="form-add-sprint-projet">
             <!-- Ajouter un script -->
                 <form id="sprintForm" action="./process/add_sprint_process.php" method="POST">
@@ -394,27 +412,87 @@ if (isset($bdd)) {
             }
             ?>
         <?php endif; ?>
-        </div>
     </div>
-    <script>
-        var now = new Date();
-        var year = now.getFullYear();
-        var month = ('0' + (now.getMonth() + 1)).slice(-2);
-        var day = ('0' + now.getDate()).slice(-2);
-        var datetime_deb = year + '-' + month + '-' + day;
 
-        var dateDebInput = document.getElementById("startDate");
-        var dateFinInput = document.getElementById("endDate");
+    <div class="projet-bac">
+        <div class="projet-element">
+            <h2>Bac à sable</h2>
+        </div>
 
-        dateDebInput.value = datetime_deb;
-        dateDebInput.min = datetime_deb;
+        <div class="projet-list-bac">
+            <table border="1" cellpadding="5">
+                <tr>
+                    <th>Idée</th>
+                    <th>Description</th>
+                    <th>Créateur</th>
+                    <th>Equipe</th>
+                </tr>
 
-        dateFinInput.value = datetime_deb;
-        dateFinInput.min = datetime_deb;
+                <?php if (isset($bacs)): ?>
+                    <?php foreach ($bacs as $bac): ?>
+                        <tr>
+                            <td><?php echo "Idée #" . $bac['Id_Idee_bas']; ?></td>
+                            <td><?php echo  $bac['desc_Idee_bas']; ?></td>
+                            <td><?php
+                                $user = getUserFromId($bac['IdU']);
+                                echo $user['PrenomU'] . " " . $user['NomU'];
+                            ?>
+                            </td>
+                            <td><?php echo getEquipeFromId($bac['IdEq'])['NomEqPrj'];?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4">Aucune idée dans le bac à sable pour ce projet.</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
 
-        dateDebInput.addEventListener('input', function() {
-            dateFinInput.value = this.value;
-            dateFinInput.min = this.value;
-        });
-    </script>
+        <?php if (isset($is_scrum_master) && $is_scrum_master):?>
+        <div class="form-add-bac-projet">
+            <form id="ideeForm" action="./process/add_idee_process.php" method="POST">
+                <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
+                <input hidden type="text" name="bac_IdU" value="<?php echo $_SESSION['user_id'] ?>">
+                <input hidden type="text" name="bac_IdEq" value="<?php echo getEquipeFromUser($_SESSION['user_id'])['IdEq'] ?>">
+
+                <textarea id="bac_desc" name="bac_desc" placeholder="Description de votre idée" required></textarea>
+
+                <button type="submit">Ajouter l'idée</button>
+            </form>
+        </div>
+        <?php endif; ?>
+
+        <?php if (isset($is_scrum_master)): ?>
+            <?php if ($is_scrum_master): ?>
+                <button><a href="./pages/planning_poker_scrum.php">Allez au planning poker!</a></button>
+            <?php else: ?>
+                <button><a href="./pages/planning_poker.php">Allez au planning poker !</a></button>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+
 </div>
+
+<script>
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);
+    var day = ('0' + now.getDate()).slice(-2);
+    var datetime_deb = year + '-' + month + '-' + day;
+
+    var dateDebInput = document.getElementById("startDate");
+    var dateFinInput = document.getElementById("endDate");
+
+    dateDebInput.value = datetime_deb;
+    dateDebInput.min = datetime_deb;
+
+    dateFinInput.value = datetime_deb;
+    dateFinInput.min = datetime_deb;
+
+    dateDebInput.addEventListener('input', function() {
+        dateFinInput.value = this.value;
+        dateFinInput.min = this.value;
+    });
+</script>
