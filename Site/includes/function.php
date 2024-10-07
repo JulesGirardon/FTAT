@@ -46,26 +46,6 @@ function getProjectWhereScrumMaster($IdU) {
     return null;
 }
 
-function getIdTeamFromProject($IdP) {
-    include "../includes/connexionBDD.php";
-
-    try {
-        if (isset($IdP) && isset($bdd)){
-            $sql = "SELECT e.IdEq
-                FROM ftat.equipesprj AS e
-                JOIN ftat.projets AS p ON p.IdEq = e.IdEq
-                WHERE p.IdP = :IdP";
-            $stmt = $bdd->prepare($sql);
-            $stmt->bindParam(':IdP', $IdP);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC)['IdEq'];
-        }
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-    return null;
-}
-
 function getEquipeFromUser($id_user){
     include 'connexionBDD.php';
     try {
@@ -480,16 +460,15 @@ function getSprintsFromProject($id_projet) {
         }
     }
 }
+
 function getActiveSprintOfTeam($id_team) {
     include "connexionBDD.php";
 
-    if(isset($bdd, $id_team)) {
-        try{
-            $sql = "SELECT sprints.* FROM ftat.sprints WHERE :current_date BETWEEN sprints.DateDebS AND sprints.DateFinS AND sprints.IdEq = :id_team";
+    if (isset($bdd, $id_team)) {
+        try {
+            $sql = "SELECT * FROM ftat.sprints WHERE CURDATE() BETWEEN sprints.DateDebS AND sprints.DateFinS AND sprints.IdEq = :id_team AND sprints.DateFinS != CURDATE()";
             $stmt = $bdd->prepare($sql);
 
-            $current_date = date('Y-m-d');
-            $stmt->bindParam(':current_date', $current_date);
             $stmt->bindParam(':id_team', $id_team, PDO::PARAM_INT);
 
             $stmt->execute();
@@ -498,11 +477,12 @@ function getActiveSprintOfTeam($id_team) {
 
             return $sprint ? $sprint : null;
 
-        } catch (PDOException $e){
+        } catch (PDOException $e) {
             return null;
         }
     }
 }
+
 
 function getNoAssignedTaskInProject($id_projet){
     include 'connexionBDD.php';
@@ -676,7 +656,7 @@ function getBacOfProject($id_projet){
 
     if(isset($bdd, $id_projet)) {
         try {
-            $sql = "SELECT * FROM ftat.idees_bac_a_sable AS bac JOIN ftat.equipesprj AS epj ON epj.IdEq = bac.IdEq WHERE epj.IdP = :id_projet";
+            $sql = "SELECT * FROM ftat.idees_bac_a_sable JOIN ftat.equipesprj ON idees_bac_a_sable.IdEq = equipesprj.IdEq WHERE equipesprj.IdP = :id_projet";
             $stmt = $bdd->prepare($sql);
             $stmt->bindParam(':id_projet', $id_projet);
             $stmt->execute();
@@ -686,7 +666,10 @@ function getBacOfProject($id_projet){
 
         } catch (PDOException $e){
             echo $e->getMessage();
+            return $e;
         }
+    } else{
+        return "prout";
     }
 }
 
@@ -883,7 +866,6 @@ function getEquipeFromUserInProject($idUser, $idProjet) {
     }
 }
 
-
 function getMembresFromEquipe($idEquipe) {
     include 'connexionBDD.php';
 
@@ -937,5 +919,237 @@ function getPourcentageProjet($id_projet) {
         } catch (PDOException $e) {
             return null;
         }
+    }
+}
+
+function isInATeamInProjet($id_user, $id_projet) {
+    include 'connexionBDD.php';
+    
+    if (isset($bdd, $id_user, $id_projet)) {
+        try {
+            $sql = "SELECT COUNT(*) FROM ftat.membre_equipe JOIN ftat.equipesprj ON membre_equipe.IdEq = equipesprj.IdEq JOIN ftat.projets ON projets.IdP = equipesprj.IdP WHERE membre_equipe.IdU = :id_user AND equipesprj.IdP = :id_projet";
+                    
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':id_projet', $id_projet);
+            $stmt->execute();
+
+            $count = $stmt->fetchColumn();
+
+            return $count > 0; 
+            
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    return false;
+}
+
+
+function isInTeam($id_user,$id_equipe){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && $bdd || isset($id_user, $id_equipe)) {
+        try{
+            $sql = "SELECT COUNT(*) FROM ftat.membre_equipe WHERE membre_equipe.IdU = :id_user AND membre_equipe.IdEq = :id_equipe";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->bindParam(':id_equipe', $id_equipe);
+            $stmt->execute();
+
+            $count = $stmt->fetchColumn();
+            if ($count > 0){
+                return true;
+            } else{
+                return false;
+            }
+
+        
+        } catch(PDOException $e){
+            return null;
+        }
+    } else{
+        return null;
+    }
+}
+
+function getAllIdeeFromProject($IdP) {
+    include 'connexionBDD.php';
+
+    if (isset($bdd, $IdP) && $bdd && $IdP) {
+        try{
+            $sql = "SELECT * FROM ftat.idees_bac_a_sable AS ibac JOIN ftat.equipesprj AS epj ON epj.IdEq = ibac.IdEq WHERE epj.IdP = :IdP";
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':IdP', $IdP);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch(PDOException $e){
+            return null;
+        }
+    } else{
+        return null;
+    }
+}
+
+function getAllTaskOfUser($id_user){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && isset($id_user)) {
+        try {
+            $sql = "SELECT * FROM ftat.taches JOIN ftat.sprintbacklog ON taches.IdT = sprintbacklog.IdT WHERE sprintbacklog.IdU = :id_user";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $taches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($taches) {
+                return $taches;
+            } else {
+                return [];
+            }
+
+        } catch (PDOException $e) {
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
+
+
+function getProjectFromTask($id_task){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && isset($id_task)) {
+        try {
+            $sql = "SELECT * FROM ftat.projets JOIN ftat.taches ON taches.IdP = projets.IdP WHERE taches.IdT = :id_task";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_task', $id_task);
+            $stmt->execute();
+
+            $projet = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($projet) {
+                return $projet;
+            } else {
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
+
+function getTeamFromTask($id_task){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && isset($id_task)) {
+        try {
+            $sql = "SELECT * FROM ftat.equipesprj JOIN ftat.sprints ON equipesprj.IdEq = sprints.IdEq JOIN ftat.sprintbacklog ON sprintbacklog.IdS = sprints.IdS WHERE sprintbacklog.IdT = :id_tache";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_tache', $id_task);
+            $stmt->execute();
+
+            $projet = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($projet) {
+                return $projet;
+            } else {
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    } else {
+        return null;
+    }
+}
+
+function getUserById($id_user){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && isset($id_user)) {
+        try {
+            $sql = "SELECT * FROM ftat.utilisateurs WHERE utilisateurs.IdU = :id_user";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_user', $id_user);
+            $stmt->execute();
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                return $user;
+            } else {
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    } else {
+        return null;
+    }
+}
+
+function getAllTaskOfTeam($id_equipe){
+    include 'connexionBDD.php';
+
+    if (isset($bdd) && isset($id_equipe)) {
+        try {
+            $sql = "SELECT * FROM ftat.taches JOIN ftat.projets ON taches.IdP = projets.IdP JOIN equipesprj ON projets.IdP = equipesprj.IdP WHERE equipesprj.IdEq = :id_equipe";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->bindParam(':id_equipe', $id_equipe);
+            $stmt->execute();
+
+            $taches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($taches) {
+                return $taches;
+            } else {
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    } else {
+        return null;
+    }
+}
+
+function getAllTeams() {
+    include 'connexionBDD.php';
+
+    if (isset($bdd)) {
+        try {
+            $sql = "SELECT * FROM ftat.equipesprj";
+            $stmt = $bdd->prepare($sql);
+            $stmt->execute();
+
+            $taches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($taches) {
+                return $taches;
+            } else {
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    } else {
+        return null;
     }
 }

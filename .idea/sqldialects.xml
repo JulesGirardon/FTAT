@@ -11,5 +11,7 @@
     <file url="file://$PROJECT_DIR$/Site/process/add_revue_process.php" dialect="MariaDB" />
     <file url="file://$PROJECT_DIR$/Site/process/add_user_process.php" dialect="MariaDB" />
     <file url="file://$PROJECT_DIR$/Site/process/assign_task_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/close_sprint_process.php" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Site/process/del_idee_process.php" dialect="MariaDB" />
   </component>
 </project>

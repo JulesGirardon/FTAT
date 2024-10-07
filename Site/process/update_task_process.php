@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute();
             header("Location: ../index.php?id=" . $id_projet);
             exit();
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             if (strpos($e->getMessage(), 'Un autre sprint est déjà actif') !== false) {
                 $_SESSION['error'] = "dateSprint";
                 header("Location: ../index.php?id=" . $id_projet);
