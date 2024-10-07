@@ -58,12 +58,12 @@
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mariadb"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mariadb&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\xampp\htdocs\FTAT\Site\process" />
@@ -96,6 +96,8 @@
       <workItem from="1728229407821" duration="427000" />
       <workItem from="1728229849347" duration="4478000" />
       <workItem from="1728234433303" duration="640000" />
+      <workItem from="1728245841342" duration="3000" />
+      <workItem from="1728246920720" duration="1859000" />
     </task>
     <servers />
   </component>
