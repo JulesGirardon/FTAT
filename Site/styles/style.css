@@ -300,3 +300,15 @@ button a {
 .hidden {
     display: none;
 }
+
+.form-add-sprint-projet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.form-add-sprint-projet form {
+    border: 2px solid #253031;
+    border-radius: 15px;
+}

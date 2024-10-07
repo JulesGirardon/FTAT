@@ -62,12 +62,30 @@ $projectId = isset($_GET['id']) ? $_GET['id'] : null;
 
             if (isset($projectId)) {
                 // Si un projet est sélectionné, ajouter l'ID dans le lien "Ma page individuelle"
-                if (isset($_GET['page'])) {
-                    echo '<a href="?id=' . $projectId . '">Retour au projet</a>';
+                if (isset($_GET['page']) && $_GET['page'] == 'individual') {
+                    echo '<a style="margin-left: 5px" href="?id=' . $projectId . '">Retour au projet</a>';
                 } else {
-                    echo '<a href="?page=individual&id=' . $projectId . '">Ma page individuelle</a>';
+                    echo '<a style="margin-left: 5px" href="?page=individual&id=' . $projectId . '">Ma page individuelle</a>';
                 }
+            }
 
+            if(isset($_GET['page']) && $_GET['page'] == 'global') {
+                echo '<a style="margin-left: 5px" style="margin-left: 5px" href="?">Retour à la page d\'accueil</a>';
+            } else {
+                echo '<a style="margin-left: 5px" href="?page=global">Mon tableau de tâche</a>';
+            }
+
+            if($_SESSION['statut'] == 'Admin') {
+                if(isset($_GET['page']) && $_GET['page'] == 'global_view') {
+                    echo '<a style="margin-left: 5px" style="margin-left: 5px" href="?">Retour à la page d\'accueil</a>';
+                } else {
+                    echo '<a style="margin-left: 5px" href="?page=global_view">Tableau de bord général</a>';
+                }
+                if(isset($_GET['page']) && $_GET['page'] == 'team_global') {
+                    echo '<a style="margin-left: 5px" style="margin-left: 5px" href="?">Retour à la page d\'accueil</a>';
+                } else {
+                    echo '<a style="margin-left: 5px" href="?page=team_global">Tableau des équipes</a>';
+                }
             }
             ?>
             <a href="pages/logout.php"> Se déconnecter</a>
@@ -107,6 +125,13 @@ $projectId = isset($_GET['id']) ? $_GET['id'] : null;
     // Si l'URL contient "page=individual" et un "id", inclure la page individual.php
     if ($page == 'individual' && isset($projectId)) {
         include "pages/individual.php";
+    }
+    elseif ($page == 'global') {
+        include "pages/individual_global.php";
+    } elseif ($page == 'global_view') {
+        include "pages/global_view.php";
+    } else if ($page == 'team_global') {
+        include "pages/team_global.php";
     }
     // Sinon inclure projet.php si seulement l'ID est présent
     elseif (isset($projectId)) {

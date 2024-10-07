@@ -317,19 +317,23 @@ if (isset($bdd)) {
                         <?php
                         $isActive = false;
                         $isNotFinished = false;
+                        $date_actuelle = new DateTime();
+                        $date_fin_sprint = new DateTime($sprint['DateFinS']);
+
+                        $date_actuelle = $date_actuelle->format('Y-m-d');
+                        $date_fin_sprint = $date_fin_sprint->format('Y-m-d');
+
                         if (isset($sprints_actifs) && $sprints_actifs) {
                             foreach ($sprints_actifs as $sprint_actif) {
-                                if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS']) {
+                                if (isset($sprint_actif['IdS']) && $sprint_actif['IdS'] == $sprint['IdS'] && $date_actuelle != $date_fin_sprint) {
                                     $isActive = true;
                                     break;
                                 }
                             }
                         }
-                        $date_actuelle = new DateTime();
-                        $date_fin_sprint = new DateTime($sprint['DateFinS']);
-                        if ((!$sprint['RetrospectiveS'] || !$sprint['RevueDeSprint']) && $date_actuelle > $date_fin_sprint){
-                            $isNotFinished = true;
 
+                        if ((!$sprint['RetrospectiveS'] || !$sprint['RevueDeSprint']) && $date_actuelle > $date_fin_sprint) {
+                            $isNotFinished = true;
                         }
                         $backgroundColor = '';
                         if ($isActive) {
@@ -401,27 +405,43 @@ if (isset($bdd)) {
         <?php if (isset($is_scrum_master) && $is_scrum_master):?>
         <div class="form-add-sprint-projet">
             <!-- Ajouter un script -->
-                <form id="sprintForm" action="./process/add_sprint_process.php" method="POST">
+            <form id="sprintForm" action="./process/add_sprint_process.php" method="POST">
 
-                    <input type="hidden" id="id_projet" name="id_projet" value="<?php echo $id_projet ?>">
+                <input type="hidden" id="id_projet" name="id_projet" value="<?php echo $id_projet ?>">
 
-                    <label for="startDate">Début:</label>
-                    <input type="date" id="startDate" name="startDate" required>
+                <label for="startDate">Début:</label>
+                <input type="date" id="startDate" name="startDate" required>
 
-                    <label for="endDate">Fin:</label>
-                    <input type="date" id="endDate" name="endDate" required>
+                <label for="endDate">Fin:</label>
+                <input type="date" id="endDate" name="endDate" required>
 
-                    <select name="id_equipe" id="id_equipe" required>
-                        <option value="">-- Choisir une équipe -- </option>
-                        <?php foreach ($equipes as $equipe):?>
-                            <option value="<?php echo $equipe['IdEq']?>">
-                                <?php echo $equipe['NomEqPrj'] ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                <select name="id_equipe" id="id_equipe" required>
+                    <option value="">-- Choisir une équipe -- </option>
+                    <?php foreach ($equipes as $equipe):?>
+                        <option value="<?php echo $equipe['IdEq']?>">
+                            <?php echo $equipe['NomEqPrj'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
 
-                    <button type="submit">Créer le Sprint</button>
-                </form>
+                <button type="submit">Créer le Sprint</button>
+            </form>
+
+            <form style="margin-top: 10px" id="sprintForm" class="" action="./process/close_sprint_process.php" method="POST">
+
+                <input type="hidden" id="id_projet" name="id_projet" value="<?php echo $id_projet ?>">
+
+                <select name="IdS" id="IdS" required>
+                    <option value="">-- Choisir un sprint à cloturer -- </option>
+                    <?php if (isset($sprints_actifs) && $sprints_actifs): foreach ($sprints_actifs as $sprint):?>
+                        <option value="<?php echo $sprint['IdS']?>">
+                            <?php echo "Sprint #" . $sprint['IdS'] ?>
+                        </option>
+                    <?php  endforeach; endif;?>
+                </select>
+
+                <button type="submit">Clôturer le sprint</button>
+            </form>
         </div>
             <?php
             if (isset($_SESSION['error'])) {
@@ -481,6 +501,24 @@ if (isset($bdd)) {
 
                         <button type="submit">Ajouter l'idée</button>
                     </form>
+
+                    <?php if (isset($is_product_owner, $is_scrum_master) && ($is_product_owner || $is_scrum_master)): ?>
+                        <form id="ideeForm" action="./process/del_idee_process.php" method="POST">
+                            <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
+                            <select name="idee_bac_del" required>
+                                <option value="">-- Sélectionner l'idée à supprimer -- </option>
+                                <?php
+                                $idees = getAllIdeeFromProject($id_projet);
+                                foreach ($idees as $idee) {
+                                    echo "<option value='" . $idee['Id_Idee_bas'] . "'>" . $idee['desc_Idee_bas'] ."</option>";
+                                }
+
+                                ?>
+                            </select>
+
+                            <button type="submit">Supprimer l'idée</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php else: echo "Vous devez être dans une équipe pour ajouter une idée"; endif;?>
 
@@ -498,7 +536,9 @@ if (isset($bdd)) {
                     <th>Nom</th>
                     <th>Sprint actif</th>
                     <th>Membre</th>
+                    <?php if (isset($is_scrum_master) && $is_scrum_master): ?>
                     <th>Modifier l'équipe</th>
+                    <?php endif; ?>
                 </tr>
 
                 <?php if (isset($equipes)): ?>
@@ -529,6 +569,7 @@ if (isset($bdd)) {
                                 }
                                 ?>
 
+                                <?php if (isset($is_scrum_master) && $is_scrum_master): ?>
                                 <form id="addMemberTeamProcess" action="./process/add_member_to_team_process.php" method="POST">
                                     <input hidden type="text" name="id_projet" value="<?php echo $id_projet ?>">
                                     <input hidden type="text" name="id_equipe" value="<?php echo $equipe['IdEq'] ?>">
@@ -549,8 +590,10 @@ if (isset($bdd)) {
                                         <button type="submit">Valider</button>
                                     </div>
                                 </form>
+                                <?php endif; ?>
                             </td>
-                            
+
+                            <?php if (isset($is_scrum_master) && $is_scrum_master): ?>
                             <td>
                                 <form id="modTeamName" action="./process/update_team_name_process.php" method="POST">
                                     <input hidden type="text" name="id_equipe" value="<?php echo $equipe['IdEq'] ?>">
@@ -579,9 +622,8 @@ if (isset($bdd)) {
                                         <button type="submit">Valider</button>
                                     </div>
                                 </form>
-                                
-
                             </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -609,7 +651,7 @@ if (isset($bdd)) {
         </div>
         <?php endif; ?>
 
-        <?php if (isset($is_scrum_master)): ?>
+    <?php if (isset($is_scrum_master)): ?>
             <?php if ($is_scrum_master): ?>
                 <button><a href="./pages/planning_poker_scrum.php">Allez au planning poker!</a></button>
             <?php else: ?>
